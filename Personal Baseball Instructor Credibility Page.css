@@ -1,0 +1,176 @@
+/* Personal Baseball Instructor Credibility Page CSS */
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+
+nav{
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color:hsl(0, 0%, 20%);
+}
+
+nav li.home{
+  float: left;
+}
+
+nav li.MyStory{
+    font-style: italic;
+}
+
+
+li {
+    float: right;
+}
+  
+li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+  
+li a:hover:not(.active) {
+    background-color: #111;
+}
+
+h1{
+    text-align: center;
+}
+
+p.a{
+    text-align: center;
+    padding: 15px;
+}
+
+.FieldLevelContainer{
+    width: 30%;
+    text-align: center;
+    float: left;
+    line-height: 1.5;
+    padding-left: 15px;
+    
+}
+
+.FieldLevelContainer img{
+    text-align: center;
+}
+
+.FieldLevelContainer a p{
+    text-align: center;
+    color: blue;
+    text-decoration: underline blue;
+    
+}
+
+
+
+.BaseballReferenceContainer{
+    float: left;
+    width: 30%;
+    text-align: center;
+    line-height: 1.5;
+    padding-left: 52px;
+}
+
+.BaseballReferenceContainer a p{
+    text-align: center;
+    padding: 20px;
+    color: blue;
+    text-decoration: underline blue;
+}
+
+.FrontSquatContainer{
+    width: 30%;
+    margin-right: 15px;
+    text-align: center;
+    float: right;
+    background-color: transparent;
+    
+    
+}
+
+.FrontSquatContainer video{
+    height: 250px;
+    width: 100%;
+}
+
+.FrontSquatContainer strong{
+    margin-top: 100px;
+    text-align: center;
+    text-decoration: underline;
+
+}
+
+.FrontSquatContainer p{
+    line-height: 1.5;
+    margin-top: 25px;
+}
+/* Footer */
+.footerBottom{
+    background-color: hsl(0, 0%, 20%);
+    padding: 5px;
+    text-align: center;
+    font-size: 15px;
+    clear: both;
+    
+}
+
+.footerBottom p{
+    color: white;
+}
+
+.designer{
+    text-transform: uppercase;
+    font-weight: 400;
+}
+
+@media (max-width: 768px){
+    nav li.home{
+        float: none;
+    }
+    
+    li{
+        float: none;
+    }
+
+}
+
+@media (max-width: 1130px){
+    .FieldLevelContainer{
+        float: none;
+        width: 100%;
+        padding-left: 0;
+    }
+    .FieldLevelContainer p{
+        text-align: center;
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+    .BaseballReferenceContainer{
+        float: none;
+        width: 100%;
+        padding-left: 0;
+        text-align: center;
+    }
+    .BaseballReferenceContainer p{
+        padding-left: 15px;
+        padding-right: 15px;
+       
+    }
+    .FrontSquatContainer{
+        float: none;
+        width: 100%;
+    }
+    .FrontSquatContainer p{
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+}

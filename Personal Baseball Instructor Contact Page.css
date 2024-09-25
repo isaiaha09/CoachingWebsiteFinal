@@ -1,0 +1,204 @@
+/* Personal Baseball Instructor Contact Page CSS */
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+   
+}
+
+.message{
+    display: none;
+}
+
+nav{
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color:hsl(0, 0%, 20%);
+}
+
+nav li.home{
+  float: left;
+}
+
+nav li.MyStory{
+    font-style: italic;
+}
+
+
+li {
+    float: right;
+}
+  
+li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+  
+li a:hover:not(.active) {
+    background-color: #111;
+}
+
+h1{
+    text-align: center;
+}
+
+p.a{
+    text-align: center;
+    font-size: 17px;
+    
+}
+
+/* Contact Form */
+input[type=text], select, textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #000000;
+    border-radius: 4px;
+    box-sizing: border-box;
+    margin-top: 6px;
+    margin-bottom: 16px;
+    resize: vertical;
+  }
+  
+  input[type=submit] {
+    background-color: #000000ac;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  
+  input[type=submit]:hover {
+    background-color: #1414146a;
+  }
+  
+  .contactContainer {
+    border-style: solid;
+    border-radius: 5px;
+    border-color: black;
+    background-color: #cdcccc;
+    padding: 20px;
+  }
+
+p.b{
+    text-align: center;
+    padding: 10px;
+}
+
+/* Hyperlinks and images */
+.InstagramContainer{
+    float: left;
+}
+
+.InstagramContainer a p{
+    text-align: center;
+    color: blue;
+    margin-left: 250px;
+    text-decoration: underline blue;
+}
+
+.InstagramContainer img{
+    height: 175px;
+    margin-top: 50px;
+    margin-left: 250px;
+}
+
+.SISContainer{
+    float: right;
+}
+
+.SISContainer a p{
+    text-align: center;
+    color: blue;
+    margin-right: 250px;
+    text-decoration: underline blue;
+
+}
+
+.SISContainer img{
+    margin-right: 250px;
+    
+}
+
+/* Footer */
+.footerBottom{
+    background-color: hsl(0, 0%, 20%);
+    padding: 5px;
+    text-align: center;
+    font-size: 15px;
+    clear: both;
+}
+
+.footerBottom p{
+    color: white;
+}
+
+.designer{
+    text-transform: uppercase;
+    font-weight: 400;
+}
+
+@media (max-width: 768px){
+    nav li.home{
+        float: none;
+    }
+    
+    li{
+        float: none;
+    }
+
+}
+
+@media (max-width: 912px){
+    .SISContainer img{
+        height: 150px;
+        margin-right: 100px;
+        float: none;
+        
+    }
+
+    .SISContainer a p{
+        margin-right: 100px;
+    }
+
+    .InstagramContainer img{
+        height: 125px;
+        margin-top: 25px;
+        margin-left: 100px;
+        float: none;
+    }
+
+    .InstagramContainer a p{
+    margin-left: 100px;
+    }
+}
+
+@media (max-width: 500px){
+    .SISContainer img{
+        height: 100px;
+        margin-right: 50px;
+        float: none;
+    }
+    .SISContainer a p{
+        margin-right: 50px;
+    }
+
+    .InstagramContainer img{
+        height: 75px;
+        margin-top: 20px;
+        float: none;
+        margin-left: 50px;
+    }
+
+    .InstagramContainer a p{
+       margin-left: 50px;
+    }
+}

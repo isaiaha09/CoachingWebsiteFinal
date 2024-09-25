@@ -1,0 +1,284 @@
+/* Personal Baseball Instructor My Story Page CSS */
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
+nav{
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color:hsl(0, 0%, 20%);
+}
+
+nav li.home{
+  float: left;
+}
+
+nav li.MyStory{
+    font-style: italic;
+}
+
+li {
+    float: right;
+}
+  
+li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+}
+  
+li a:hover:not(.active) {
+    background-color: #111;
+}
+
+
+h1{
+    text-align: center;
+    font-style: italic;
+}
+
+.quoteContainer {
+    margin-top: -22px;
+    text-align: center;
+}
+
+.quoteContainer img{
+    height: 350px;
+    width: 60%;
+}
+
+p.a{
+    text-align: center;
+    line-height: 2;
+    padding-left: 30px;
+    padding-right: 30px;
+    margin-top: -40px;
+
+}
+
+/* First paragraph */
+.containerYoungin{
+    width: 100%;
+}
+
+.containerYoungin p{
+    
+    line-height: 3.5;
+    text-align: justify;
+    padding-right: 20px;
+    padding-left: 20px;
+    
+}
+
+.containerYoungin img{
+    margin-top: 25px;
+    max-width: 25%;
+    height: 425px;
+    padding-left: 50px;
+    float: left;
+    margin-right: 20px;
+    
+}
+
+/* Second Paragraph */
+.containerHS{
+    width: 100%;
+  
+   
+}
+
+.containerHS p{
+    padding-left: 20px;
+    padding-right: 20px;
+    line-height: 3.5;
+    text-align: justify;
+    
+
+}
+
+.containerHS img{
+    margin-top: 25px;
+    max-width: 600px;
+    height: 400px;
+    padding-right: 50px;
+    float: right;
+    margin-left: 20px;
+
+}
+
+/* Third Paragraph */
+.containerCollege{
+    width: 100%;
+    
+
+}
+
+.containerCollege p{
+    padding-left: 20px;
+    padding-right: 20px;
+    line-height: 3.5;
+    text-align: justify;
+}
+
+.containerCollege img{
+    margin-top: 25px;
+    max-width: 275px;
+    height: 400px;
+    padding-left: 50px;
+    float: left;
+    margin-right: 20px;
+
+}
+
+/* Fourth Paragraph */
+.containerMan{
+    width: 100%;
+    float: right;
+    vertical-align: top;
+
+}
+
+.containerMan p{
+    padding-left: 20px;
+    padding-right: 20px;
+    line-height: 3.5;
+    text-align: justify;
+
+}
+
+.containerMan img{
+    margin-top: 40px;
+    max-width: 600px;
+    height: 300px;
+    padding-right: 50px;
+    float: right;
+    margin-left: 20px;
+}
+
+/*Closing Paragraph */
+.containerClosing{
+    
+    width: 100%;
+    
+
+}
+
+.containerClosing p{
+    
+    padding-left: 20px;
+    padding-right: 20px;
+    line-height: 1.5;
+    text-align: center;
+}
+/* Footer */
+.footerBottom{
+    background-color: hsl(0, 0%, 20%);
+    padding: 5px;
+    text-align: center;
+    font-size: 15px;
+}
+
+.footerBottom p{
+    color: white;
+}
+
+.designer{
+    text-transform: uppercase;
+    font-weight: 400;
+}
+
+
+
+@media (max-width: 768px){
+    nav li.home{
+        float: none;
+    }
+    
+    li{
+        float: none;
+    }
+
+    .quoteContainer img{
+        height: 350px;
+        width: 80%;
+    }
+    
+    .containerYoungin{
+        float: none;
+    }
+
+    .containerYoungin img{
+        padding-left: 0;
+        float: none;
+        max-width: 80%;
+        height: 500px;
+        padding-left: 10%;
+        margin-right:0;
+        
+    }
+
+    .containerHS{
+        float: none;
+    }
+
+    .containerHS img{
+        float: none;
+        max-width: 100%;
+        padding-right: 0;
+        margin-left: 0; 
+        height: 350px;
+    }
+
+    .containerCollege{
+        float: none;
+    }
+
+    .containerCollege img{
+        float: none;
+        max-width: 80%;
+        padding-left: 10%;
+        margin-right: 0;
+        height: 500px;
+        
+    }
+
+    .containerMan{
+        float: none;
+    }
+
+    .containerMan img{
+        float: none;
+        max-width: 100%;
+        padding-right: 0px;
+        margin-left: 0px;
+    }
+}
+
+@media (max-width: 425px){
+
+    .containerYoungin img{
+        max-width: 100%;
+        padding-left: 0;
+    }
+
+    .containerHS img{
+        height: 250px
+    }
+
+    .containerCollege img{
+        max-width: 100%;
+        padding-left: 0;
+    }
+
+    .containerMan img{
+        height: 225px;
+    }
+}

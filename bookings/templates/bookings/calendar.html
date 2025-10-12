@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="en">
+{% load static %}
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Booking Calendar</title>
+    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.19/index.global.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.19/index.global.min.js"></script>
+    
+    <!-- Classic ICO favicon -->
+        <link rel="icon" href="{% static 'bookings/images_and_videos/number44.ico'%}" type="image/x-icon">
+
+        <!-- PNG favicons for modern browsers -->
+        <link rel="icon" type="image/png" sizes="16x16" href="{% static 'bookings/images_and_videos/number44-16x16.png' %}">
+        <link rel="icon" type="image/png" sizes="32x32" href="{% static 'bookings/images_and_videos/number44-32x32.png' %}">
+        <link rel="icon" type="image/png" sizes="48x48" href="{% static 'bookings/images_and_videos/number44-48x48.png' %}">
+        <link rel="icon" type="image/png" sizes="96x96" href="{% static 'bookings/images_and_videos/number44-96x96.png' %}">
+
+        <!-- Apple Touch Icon (iPhone/iPad) -->
+        <link rel="apple-touch-icon" sizes="180x180" href="{% static 'bookings/images_and_videos/number44-180x180.png' %}">
+
+        <!-- Android / High-res icons -->
+        <link rel="icon" type="image/png" sizes="192x192" href="{% static 'bookings/images_and_videos/number44-192x192.png' %}">
+        <link rel="icon" type="image/png" sizes="512x512" href="{% static 'bookings/images_and_videos/number44-512x512.png' %}">
+
+
+        <!-- Web App Manifest -->
+        <link rel="manifest" href="{% static 'bookings/site.webmanifest.json' %}">
+
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+        <meta name="mobile-web-app-capable" content="yes">
+
+    <style>
+        /* ======= Your existing CSS ======= */
+        /* General page styles */
+        .fc-daygrid-day,
+        .fc-daygrid-day-frame,
+        .fc-daygrid-day-top,
+        .fc-timegrid-col { 
+            cursor: default !important; 
+        }
+        .fc-event, .fc-bg-event { cursor: default !important; }
+        .fc-highlight, .fc-timegrid-slot { cursor: pointer !important; }
+        .fc .fc-highlight { background-color: #780090; }
+
+        h1 {
+            text-align: center;
+            color: white;
+            text-shadow:
+                -1px -1px 0 black,
+                1px -1px 0 black,
+                -1px  1px 0 black,
+                1px  1px 0 black,
+                2px 2px 0 black,
+                1px 1px 0 black,
+                3px 3px 0 black;
+            text-transform: uppercase;
+        }
+
+        p.a {
+            text-align: center;
+            font-size: 20px;
+            text-transform: uppercase;
+        }
+
+        body { 
+            font-family: Georgia Pro, serif; 
+            margin: 0; 
+            padding: 0; 
+            background: #f9f9f9; 
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url("{% static 'bookings/images_and_videos/background-image2.jpg' %}") no-repeat center center;
+            background-size: cover;
+            z-index: -1;
+            filter: blur(3px);
+            opacity: 0.2;
+        }
+
+        nav, nav ul, nav li { list-style: none; margin: 0; padding: 0; }
+
+        nav { position: relative; margin: 0; padding: 0; overflow: hidden; background-color: rgba(0,0,0,0.5); }
+
+        .hamburger {
+            width: 40px; height: 40px; padding: 8px; cursor: pointer; position: absolute;
+            top: 20px; left: 15px; z-index: 2000; display: none; flex-direction: column;
+            justify-content: space-between; border: 1px solid white; border-radius: 6px; box-sizing: border-box;
+        }
+
+        .hamburger .bar { height: 3px; background: white; width: 24px; margin: 3px 0; transition: 0.4s; }
+        .hamburger.open .bar:nth-child(1) { transform: rotate(45deg) translate(6px, 6px); }
+        .hamburger.open .bar:nth-child(2) { opacity: 0; }
+        .hamburger.open .bar:nth-child(3) { transform: rotate(-45deg) translate(4px, -5px); }
+        .hamburger:hover { transform: scale(1.2); transition: transform 0.4s ease-in-out; border-color: white; }
+
+        nav li { float: right; }
+        nav li.home { float: left; }
+        nav li.MyStory { font-style: italic; }
+        li a {
+            display: block; color: white; text-align: center; padding: 30px 12px;
+            text-decoration: none; letter-spacing: 2px; font-size: 10px; text-transform: uppercase;
+            transition: transform 0.4s ease, color 0.4s ease;
+        }
+        li a:hover { transform: scale(1.2); color: black; }
+        li.logo { float: none; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); }
+        li.logo img { height: 100px; }
+
+        #calendar { 
+            width: 70%; 
+            height: 70vh;
+            padding: 10px; 
+            margin: 40px auto; 
+            background-color: white;
+            color: #780090; 
+            box-shadow: 0 4px 12px rgba(0,0,0,1); 
+            border-radius: 8px;
+            position: relative;
+            overflow-y: auto;
+
+        }
+
+        
+
+        /* Style the title text */
+        .fc-toolbar-title {
+            right: 10%;
+            position: relative;
+            text-align: center !important;
+        }
+        
+
+        .fc .fc-daygrid-day-frame { display: flex !important; justify-content: center; align-items: center; flex-direction: column; height: 100px; }
+        .fc .fc-daygrid-day-number {
+            font-size: 40px; width: 60px; height: 60px; display: flex; justify-content: center; align-items: center;
+            border-radius: 50%; transition: transform 0.3s ease, border 0.2s ease; text-decoration: none !important; transform-origin: center;
+            margin-top: 8px;
+        }
+        .fc .fc-daygrid-day-number:hover { border: 3px solid #780090; cursor: pointer; transform: scale(1.2); }
+        .fc-timegrid-slot { height: 50px; }
+        .fc-timegrid-event.fc-event { width: 100% !important; text-align: center; left: 12px; }
+        .fc .fc-daygrid-day-events { display: none; }
+        .fc-timegrid-slot:hover { background-color: rgba(0, 0, 0, 0.1); }
+
+        .fc .fc-button { 
+            background-color: #780090 !important;
+            color: white !important; 
+            border: 1px solid #780090 !important; 
+        }
+        .fc .fc-button:hover { background-color: #c7b500 !important; color: black !important; }
+        .fc .fc-button:active { background-color: #780090 !important; color: white !important; }
+        .fc .fc-button.fc-button-active { background-color: #4e005eff !important; color: white !important; }
+        .fc .fc-button:focus { outline: none !important; }
+
+        .fc-bg-event.blocked-24h { background-color: #8f8d8dff !important; pointer-events: none !important; }
+        .fc-bg-event[title="Unavailable"] { pointer-events: none; background-color: #616161 !important; }
+        .fc .fc-event, .fc .fc-bg-event { background-color: #780090; border-color: white; }
+        .fc-bg-event.blocked.slot { position: absolute !important; left: 0 !important; width: 100% !important; background-color: #616161 !important; pointer-events: all; z-index: 5; }
+
+        .unavailable-day { position: relative; background-color: #616161ff; }
+        .unavailable-text {
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            font-weight: bold; color: #fff; pointer-events: none;
+        }
+
+        .footerBottom { background-color: rgba(0,0,0,0.5); padding: 20px; text-align: center; font-size: 15px; clear: both; margin-top: auto; }
+        .footerBottom p { color: white; }
+        .designer { text-transform: uppercase; font-weight: 400; }
+
+        /* ======= Desktop Time Circles CSS ======= */
+        #desktopTimeSlots { display: flex; justify-content: center; gap: 20px; margin: 40px auto; flex-wrap: wrap; }
+        #desktopTimeSlots div { display: flex; flex-direction: column; gap: 10px; }
+        .time-slot {
+            width: 80px; 
+            height: 80px; 
+            border-radius: 50%;
+            background-color: #780090; 
+            color: white; 
+            display: flex; 
+            justify-content: center;
+            align-items: center; 
+            font-weight: bold; 
+            cursor: pointer; 
+            transition: transform 0.3s, background-color 0.3s;
+        }
+        .time-slot:hover { transform: scale(1.2); background-color: #c7b500; }
+        .time-slot.blocked { background-color: #8f8d8d; cursor: not-allowed; transform: none; }
+
+        .time-slot.booked,
+        .time-circle.booked {
+            font-size: 12px;
+            background-color: #780090; /* gray */
+            cursor: not-allowed;
+            transform: none;           /* no hover scale */
+        }
+
+        .time-slot.booked:hover,
+        .time-circle.booked:hover {
+            background-color: #ffffffff; /* prevent hover effect */
+            transform: none;
+        }
+
+        #timeCirclesContainer {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        .time-column {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0 15px;
+        }
+
+        .time-circle {
+            width: 60px;
+            height: 60px;
+            margin: 5px 0;
+            border-radius: 50%;
+            background-color: #780090;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            transition: transform 0.2s, background 0.2s;
+        }
+
+        .time-circle:hover {
+            transform: scale(1.2);
+            background-color: #c7b500;
+        }
+
+        .time-circle.booked {
+            background-color: #616161;
+            cursor: not-allowed;
+        }
+
+
+        /* ======= Mobile Styles ======= */
+        @media (max-width: 800px) {
+            .fc-toolbar-title { font-size: 22px !important; text-align: center !important;}
+            .fc-button { font-size: 10px; padding: 4px 6px; }
+            .fc .fc-button { font-size: 12px; padding: 3px 5px; }
+            .fc-timegrid-slot-label { font-size: 12px; }
+            #calendar { width: 100vw !important; height: 25vh;}
+            .fc-timegrid-event { font-size: 0.75em; padding: 1px 2px; }
+            .unavailable-text { font-size: 8px !important; }
+            nav li.home, nav li { float: none; }
+            li a { padding: 0 12px; }
+            h1 { padding-top: 30px; }
+            li.logo { position: relative; top: 0; left: 0; transform: none; width: fit-content; margin: 0 auto; }
+            li.logo img { height: 125px; }
+            .hamburger { display: flex; top: 15px; left: 15px; }
+            .mobile-menu {
+                position: fixed; top: 0; left: 0; height: 100vh; width: 100vw;
+                background-color: rgba(0, 0, 0, 0.8); z-index: 1000; display: flex; flex-direction: column;
+                align-items: center; justify-content: center; opacity: 0; transform: translateY(-80px);
+                pointer-events: none; transition: opacity 0.5s ease, transform 0.5s ease;
+            }
+            .mobile-menu.open { opacity: 1; transform: translateY(0); pointer-events: auto; }
+            .mobile-menu li { margin: 70px 0; }
+            .mobile-menu li a:hover { color: #fff; background-color: rgba(255, 255, 255, 0.1); border-radius: 8px; transition: background 0.3s; }
+        }
+    </style>
+</head>
+<body>     
+    <nav>
+        <div class="hamburger" onclick="toggleMenu()">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+        </div>
+        <li class="logo">
+            <a href="{% url 'login' %}">
+                <img src="{% static 'bookings/images_and_videos/number44.png' %}" alt="Logo" />
+            </a>
+        </li>
+        <div class="mobile-menu">
+            <ul>
+                <li class="home"><a href="{% url 'index' %}">Home</a></li>
+                <li class="MyStory"><a href="{% url 'my-story' %}">My Story</a></li>
+                <li><a href="{% url 'credibility' %}">Credibility</a></li>
+                <li><a href="{% url 'contact' %}">Contact</a></li>
+                <li><a href="{% url 'gallery' %}">Gallery</a></li>
+            </ul>
+        </div>
+    </nav>
+    <h1>Booking Calendar</h1>
+    <p class="a"><strong>Please choose an available day and time that you would like to book a lesson</strong></p>
+    <div id="calendar"></div>
+    <div id="timeCirclesContainer"></div>
+
+    <script>
+        document.addEventListener('mousedown', function(e) {
+            if(e.target.classList.contains('fc-event-background')){
+                e.preventDefault(); e.stopPropagation();
+            }
+        }, true);
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendarEl = document.getElementById('calendar');
+            
+
+            function isMobile() { return window.innerWidth <= 1130; }
+
+            function toLocalISOString(date){
+                // Keep the local time in YYYY-MM-DDTHH:mm format
+                const pad = n => n.toString().padStart(2,'0');
+                return `${date.getFullYear()}-${pad(date.getMonth()+1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+            }
+
+            function getToolbarOptions() {
+                if (isMobile()) {
+                    return { left: 'prev,next today', center: 'title', right: 'dayGridWeek,timeGridDay' };
+                } else {
+                    return { left: 'prev,next today', center: 'title', right: 'dayGridMonth,timeGridDay' };
+                }
+            }
+
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: isMobile() ? 'dayGridWeek' : 'dayGridMonth',
+                headerToolbar: getToolbarOptions(),
+                allDaySlot: false,
+                slotDuration: '00:30:00',
+                slotLabelInterval: '00:30',
+                slotMinTime: '08:00:00',
+                slotMaxTime: '22:00:00',
+                slotLabelFormat: { hour: 'numeric', minute: '2-digit', hour12: true },
+                nowIndicator: true,
+                editable: false,
+                navLinks: true,
+              
+                height: '100%',
+                contentHeight: 'auto',
+                expandRows: false,
+                scrollTime: '09:00:00',
+
+                selectable: true,
+                selectMirror: false,
+                selectOverlap: false,
+                slotEventOverlap: false,
+                eventOverlap: false,
+                eventDisplay: 'block',
+
+
+                events: function(fetchInfo, successCallback) {
+                    fetch("{% url 'calendar_view' %}").then(r=>r.json()).then(data=>successCallback(data.events));
+                },
+
+                select: function(info) {
+                    let now = new Date();
+                    if ((info.start - now) / (1000*60*60) < 24) { alert("You cannot book lessons less than 24 hours in advance."); calendar.unselect(); return; }
+
+                    let partialBlocks = calendar.getEvents().filter(e => e.extendedProps.blocked && !e.allDay && e.start && e.end);
+                    for (let pb of partialBlocks) {
+                        let bStart = new Date(pb.start), bEnd = new Date(pb.end);
+                        if (info.start < bEnd && info.end > bStart) { alert("This time is unavailable."); calendar.unselect(); return; }
+                    }
+
+                    if (calendar.view.type === 'timeGridDay') window.location.href = "{% url 'book_lesson' %}" + "?date=" + info.startStr;
+                    calendar.unselect();
+                },
+
+                // Intercept view changes on mobile
+
+                selectAllow: function(selectInfo) {
+                    const blockedDates = {{ blocked_dates|default:"[]"|safe }};
+                    const selectDateStr = selectInfo.startStr.split("T")[0];
+                    if (blockedDates.includes(selectDateStr)) return false;
+
+                    // Existing 24-hour and partial block checks
+                    let now = new Date();
+                    if ((selectInfo.start - now)/(1000*60*60) < 24) return false;
+
+                    const partialBlocks = calendar.getEvents().filter(e => e.extendedProps.blocked && !e.allDay && e.start && e.end);
+                    for (let pb of partialBlocks) {
+                        let bStart = new Date(pb.start), bEnd = new Date(pb.end);
+                        if (selectInfo.start < bEnd && selectInfo.end > bStart) return false;
+                    }
+
+                    return true;
+                },
+
+                dateClick: function(info) {
+                    const now = new Date();
+                    const clickedDate = new Date(info.date);
+                    const dateStr = info.dateStr;
+
+                    // Prevent <24h booking
+                    if ((clickedDate - now)/(1000*60*60) < 24) {
+                        alert("You cannot book lessons less than 24 hours in advance.");
+                        return;
+                    }
+
+                    if (isMobile()) {
+                        // ✅ Switch calendar to "day" view internally
+                        calendar.changeView('timeGridDay', dateStr);
+
+                        // Hide FullCalendar’s timeGrid
+                        const timeGrid = calendarEl.querySelector('.fc-timegrid');
+                        if (timeGrid) timeGrid.style.display = 'none';
+
+                        // Remove any existing circles
+                        const circles = document.getElementById('desktopTimeSlots');
+                        if (circles) circles.remove();
+
+                        // Render time circles
+                        generateDesktopTimeCircles(dateStr);
+                        return;
+                    }
+
+                    // Desktop logic
+                    // Only generate time circles if in day view
+                    if (calendar.view.type === 'timeGridDay') {
+                        generateDesktopTimeCircles(info.dateStr);
+                    }
+
+                    if (calendar.view.type === 'timeGridDay') {
+                        window.location.href = "{% url 'book_lesson' %}?date=" + clickedDate.toISOString();
+                    }
+                },
+
+                dayCellClassNames: function(arg) {
+                    const blockedDates = {{ blocked_dates|default:"[]"|safe }};
+                    return blockedDates.includes(arg.dateStr) ? ['blocked-day'] : [];
+                },
+
+                dayCellDidMount: function(arg) {
+                    const blockedDates = {{ blocked_dates|default:"[]"|safe }};
+                    const dateStr = arg.date.toISOString().split('T')[0];
+                    if (blockedDates.includes(dateStr)) {
+                        const dayNumberEl = arg.el.querySelector('.fc-daygrid-day-number');
+                        if(dayNumberEl) dayNumberEl.style.display = 'none';
+
+                        const unavailableEl = document.createElement('div');
+                        unavailableEl.innerText = 'Unavailable';
+                        unavailableEl.classList.add('unavailable-text');
+                        arg.el.classList.add('unavailable-day');
+                        arg.el.appendChild(unavailableEl);
+
+                        arg.el.addEventListener('click', function(e){
+                            e.stopPropagation();
+                            e.preventDefault();
+                            alert("My apologies. I will not be available for lessons this day...");
+                        });
+                    }
+                },
+
+                datesSet: function(info) {
+                    calendar.unselect();
+
+                    // Remove old header every time view changes
+                    const oldHeader = document.getElementById('selectedDayHeader');
+                    if (oldHeader) oldHeader.remove();
+
+                    if (calendar.view.type === 'timeGridDay') {
+                        const currentDate = info.startStr.split("T")[0];
+                        generateDesktopTimeCircles(currentDate);
+                    }
+
+                    if (isMobile()) {
+                        const timeGrid = calendarEl.querySelector('.fc-timegrid');
+                        if (timeGrid) timeGrid.style.display = 'none';
+                    }
+
+                    if (isMobile()) {
+                        // Always hide FullCalendar's timeGrid on mobile
+                        const timeGrid = calendarEl.querySelector('.fc-timegrid');
+                        if (timeGrid) timeGrid.style.display = 'none';
+
+                        const circles = document.getElementById('desktopTimeSlots');
+                        if (circles) circles.remove();
+
+                        // ✅ Only show circles if user is in "day" view
+                        if (calendar.view.type === 'timeGridDay') {
+                            const currentDate = info.startStr.split("T")[0];
+                            generateDesktopTimeCircles(currentDate);
+                        }
+                    } else {
+                        // Desktop: month view = circles, day view = circles
+                        if (calendar.view.type === "timeGridDay") {
+                            const currentDate = info.startStr.split("T")[0];
+                            generateDesktopTimeCircles(currentDate);
+                        } else {
+                            const circles = document.getElementById('desktopTimeSlots');
+                            if (circles) circles.remove();
+                        }
+                    }
+                },
+               
+
+                validRange: function(nowDate) {
+                    const today = new Date();
+                    const year = today.getFullYear();
+                    const month = today.getMonth(); // 0-based
+                    const lastDayOfMonth = new Date(year, month + 1, 0); // last day of current month
+
+                    // Allow next month only if within 7 days of its start
+                    const firstDayNextMonth = new Date(year, month + 1, 1);
+                    const diffDays = Math.ceil((firstDayNextMonth - today) / (1000*60*60*24));
+
+                    let end = lastDayOfMonth;
+                    if (diffDays <= 7) {
+                        const lastDayNextMonth = new Date(year, month + 2, 0);
+                        end = lastDayNextMonth;
+                    }
+
+                    return { start: today, end: end };
+                },
+
+                views: {
+                    timeGridWeek: {
+                        dayHeaderContent: function(arg) {
+                            if (window.innerWidth <= 1130) {
+                                let weekday = new Intl.DateTimeFormat('en-US', { weekday: 'short' }).format(arg.date);
+                                let dayNum = arg.date.getDate();
+                                return { html: `<div class="mobile-header"><div class="weekday">${weekday}</div><div class="daynum">${dayNum}</div></div>` };
+                            } else {
+                                return new Intl.DateTimeFormat('en-US', { weekday: 'short' }).format(arg.date);
+                            }
+                        }
+                    },
+                    timeGridDay: {
+                        slotLabelFormat: { hour: 'numeric', minute: '2-digit', hour12: true }
+                    },
+                },
+
+                windowResize: function(view) {
+                    if (isMobile()) {
+                        // Hide any timeGrid
+                        const timeGridTable = document.querySelector('#calendar .fc-timegrid');
+                        if (timeGridTable) timeGridTable.style.display = 'none';
+
+                        // Remove circles unless we're on "day" view
+                        const circles = document.getElementById('desktopTimeSlots');
+                        if (circles) circles.remove();
+
+                        if (calendar.view.type === 'timeGridDay') {
+                            const currentDate = calendar.view.currentStart.toISOString().split('T')[0];
+                            generateDesktopTimeCircles(currentDate);
+                        }
+                    } else {
+                        // Desktop: allow both month/day to render circles
+                        if (calendar.view.type === "timeGridDay") {
+                            const currentDate = calendar.view.currentStart.toISOString().split('T')[0];
+                            generateDesktopTimeCircles(currentDate);
+                        }
+                    }
+                },
+
+        
+                });
+
+                // Intercept view changes on mobile
+            calendar.on('viewDidMount', function(viewInfo) {
+                if (isMobile()) {
+                    // Hide any FullCalendar timeGrid tables
+                    const timeGrid = calendarEl.querySelector('.fc-timegrid');
+                    if (timeGrid) timeGrid.style.display = 'none';
+
+                    // Remove any previous time circles
+                    const existingCircles = document.getElementById('desktopTimeSlots');
+                    if (existingCircles) existingCircles.remove();
+
+                    // Always show 2-column time circles for the first visible date
+                    const firstDate = calendar.view.currentStart.toISOString().split('T')[0];
+                    generateDesktopTimeCircles(firstDate);
+                }
+
+                calendar.on('dateClick', function(info) {
+                    if (isMobile()) {
+                        // Remove any existing circles
+                        const existingCircles = document.getElementById('desktopTimeSlots');
+                        if (existingCircles) existingCircles.remove();
+
+                        // Hide the week grid
+                        const weekGrid = calendarEl.querySelector('.fc-daygrid-body');
+                        if (weekGrid) weekGrid.style.display = 'none';
+
+                        // Generate 2-column circles for the clicked day
+                        const currentDate = info.dateStr;
+                        generateDesktopTimeCircles(currentDate);
+                    }
+                });
+
+                calendar.on('datesSet', function(info) {
+                     // Remove any previous header
+                    const oldHeader = document.getElementById('selectedDayHeader');
+                    if (oldHeader) oldHeader.remove();
+
+                    // Only generate time circles in day view
+                    if (calendar.view.type === 'timeGridDay') {
+                        const selectedDate = calendar.getDate(); // current day in view
+                        generateDesktopTimeCircles(selectedDate.toISOString().split('T')[0]);
+                    }
+
+                    if (isMobile()) {
+                        // Always hide any timeGrid
+                        const timeGrid = calendarEl.querySelector('.fc-timegrid');
+                        if (timeGrid) timeGrid.style.display = 'none';
+                    }
+
+                    // Desktop: when day view is selected
+                    if (!isMobile() && calendar.view.type === 'timeGridDay') {
+                        const currentDate = info.startStr.split("T")[0];
+                        generateDesktopTimeCircles(currentDate);
+                    }
+                });
+});
+
+            calendar.render();
+
+            function generateDesktopTimeCircles(dateStr) {
+                if (calendar.view.type !== 'timeGridDay') return; // Only in day view
+
+                // Remove previous circles and header
+                const existing = document.getElementById('desktopTimeSlots');
+                if (existing) existing.remove();
+                const existingHeader = document.getElementById('selectedDayHeader');
+                if (existingHeader) existingHeader.remove();
+
+                const blockedDates = {{ blocked_dates|default:"[]"|safe }};
+                const isFullyBlocked = blockedDates.includes(dateStr);
+
+                // Create day header
+                const parts = dateStr.split('-');
+                const selectedDate = new Date(parts[0], parts[1]-1, parts[2]); // local date
+                const weekday = selectedDate.getDay(); // 0=Sunday, 6=Saturday
+
+                const dayHeader = document.createElement('h2');
+                dayHeader.id = 'selectedDayHeader';
+                dayHeader.style.textAlign = 'center';
+                dayHeader.style.color = '#780090';
+                dayHeader.style.marginTop = '20px';
+                dayHeader.style.marginBottom = '20px';
+                dayHeader.textContent = selectedDate.toLocaleDateString('en-US', { weekday: 'long' });
+                calendarEl.appendChild(dayHeader);
+
+                // Create container and columns
+                const container = document.createElement('div');
+                container.id = 'desktopTimeSlots';
+                container.style.display = 'flex';
+                container.style.justifyContent = 'center';
+                container.style.gap = '40px';
+                container.style.margin = '40px auto';
+                calendarEl.appendChild(container);
+
+                const col1 = document.createElement('div');
+                const col2 = document.createElement('div');
+                col1.style.display = 'flex'; col1.style.flexDirection = 'column'; col1.style.gap = '20px';
+                col2.style.display = 'flex'; col2.style.flexDirection = 'column'; col2.style.gap = '20px';
+
+                const blockedEvents = calendar.getEvents().filter(e => !e.allDay && e.extendedProps.blocked);
+
+                // Determine start/end hour
+                let startHour, endHour;
+                if (weekday === 0 || weekday === 6) { // weekend
+                    startHour = 9; endHour = 20;
+                } else { // weekdays
+                    startHour = 15; endHour = 20;
+                }
+
+                for (let h = startHour; h <= endHour; h++) {
+                    ['00','30'].forEach(min => {
+                        const slotTime = new Date(parts[0], parts[1]-1, parts[2], h, parseInt(min));
+                        let displayHour = h % 12 === 0 ? 12 : h % 12;
+                        let ampm = h < 12 ? "AM" : "PM";
+                        let label = `${displayHour}:${min} ${ampm}`;
+
+                        const isBooked = blockedEvents.some(e => {
+                            const bStart = new Date(e.start);
+                            const bEnd = new Date(e.end);
+                            return slotTime >= bStart && slotTime < bEnd;
+                        });
+
+                        const now = new Date();
+                        const cutoff = new Date(now.getTime() + 24*60*60*1000);
+                        const tooSoon = slotTime < cutoff;
+
+                        const slot = document.createElement('div');
+                        slot.className = 'time-slot';
+
+                        // ✅ If fully blocked day, mark all slots as unavailable
+                        if (isFullyBlocked || isBooked || tooSoon) {
+                            slot.textContent = "Unavailable";
+                            slot.classList.add("booked");
+                        } else {
+                            slot.textContent = label;
+                            slot.addEventListener('click', () => {
+                                window.location.href = "{% url 'book_lesson' %}?date=" + toLocalISOString(slotTime);
+                            });
+                            slot.addEventListener('mouseover', () => slot.style.backgroundColor = '#c7b500');
+                            slot.addEventListener('mouseout', () => slot.style.backgroundColor = '#780090');
+                        }
+
+                        if (min === '00') col1.appendChild(slot);
+                        else col2.appendChild(slot);
+                    });
+                }
+
+                container.appendChild(col1);
+                container.appendChild(col2);
+
+                const timeGridTable = calendarEl.querySelector('.fc-timegrid');
+                if (timeGridTable) timeGridTable.style.display = 'none';
+            }
+
+            // Handle window resize
+            window.addEventListener('resize', () => {
+                if (isMobile()) {
+                    const circles = document.getElementById('desktopTimeSlots');
+                    if (circles) circles.remove();
+
+                    const timeGridTable = document.querySelector('#calendar .fc-timegrid');
+                    if (timeGridTable) timeGridTable.style.display = 'table';
+                }
+            });
+        });
+    </script>
+
+    <script>
+        function toggleMenu() {
+            const menu = document.querySelector('.mobile-menu');
+            const hamburger = document.querySelector('.hamburger');
+            menu.classList.toggle('open');
+            hamburger.classList.toggle('open');
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+          const yearSpan = document.getElementById('currentYear');
+          if (yearSpan) yearSpan.textContent = new Date().getFullYear();
+        });
+    </script>
+
+        <script>
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register("{% static 'bookings/service-worker.js' %}")
+                .then(reg => console.log("Service Worker registered:", reg))
+                .catch(err => console.error("Service Worker error:", err));
+            }
+        </script>
+
+    <div class="footerBottom">
+        <p>Copyright &copy; <span id="currentYear"></span>; Designed by 
+            <span class="designer">Isaiah Alvarez</span> - All Rights Reserved
+        </p>
+    </div>
+</body>
+</html>

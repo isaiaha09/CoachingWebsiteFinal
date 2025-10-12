@@ -1,0 +1,222 @@
+{% load static%}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{% static 'bookings/client_menu.css' %}">
+    <!-- Classic ICO favicon -->
+        <link rel="icon" href="{% static 'bookings/images_and_videos/number44.ico'%}" type="image/x-icon">
+
+        <!-- PNG favicons for modern browsers -->
+        <link rel="icon" type="image/png" sizes="16x16" href="{% static 'bookings/images_and_videos/number44-16x16.png' %}">
+        <link rel="icon" type="image/png" sizes="32x32" href="{% static 'bookings/images_and_videos/number44-32x32.png' %}">
+        <link rel="icon" type="image/png" sizes="48x48" href="{% static 'bookings/images_and_videos/number44-48x48.png' %}">
+        <link rel="icon" type="image/png" sizes="96x96" href="{% static 'bookings/images_and_videos/number44-96x96.png' %}">
+
+        <!-- Apple Touch Icon (iPhone/iPad) -->
+        <link rel="apple-touch-icon" sizes="180x180" href="{% static 'bookings/images_and_videos/number44-180x180.png' %}">
+
+        <!-- Android / High-res icons -->
+        <link rel="icon" type="image/png" sizes="192x192" href="{% static 'bookings/images_and_videos/number44-192x192.png' %}">
+        <link rel="icon" type="image/png" sizes="512x512" href="{% static 'bookings/images_and_videos/number44-512x512.png' %}">
+
+
+        <!-- Web App Manifest -->
+        <link rel="manifest" href="{% static 'bookings/site.webmanifest.json' %}">
+
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+        <meta name="mobile-web-app-capable" content="yes">
+    
+    <title>Client Menu</title>
+    <style>
+        body::before {
+        content: "";
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: url("{% static 'bookings/images_and_videos/background-image2.jpg' %}") no-repeat center center;
+        background-size: cover;
+        z-index: -1;
+        filter: blur(3px);
+        opacity: 0.2;
+        }
+    </style>
+
+</head>
+<body>
+    <nav>
+            <div class="hamburger" onclick="toggleMenu()">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+            </div>
+
+            <li class="logo">
+                <a href="{% url 'login' %}">
+                    <img src="{% static 'bookings/images_and_videos/number44.png' %}" alt="Logo" />
+                </a>
+            </li>
+
+            <div class="mobile-menu">
+                <ul>
+                    <li class="home"><a href="{% url 'index' %}">Home</a></li>
+                    <li class="MyStory"><a href="{% url 'my-story' %}">My Story</a></li>
+                    <li><a href="{% url 'credibility' %}">Credibility</a></li>
+                    <li><a href="{% url 'contact' %}">Contact</a></li>
+                    <li><a href="{% url 'gallery' %}">Gallery</a></li>
+                </ul>
+            </div>
+        </nav>
+
+      <!--  <button id="subscribeBtn">Enable Notifications</button> -->
+    <div class="client-menu-container">
+        <h1>Welcome, {{ user.first_name }}!</h1>
+        <div class="button-group">
+            <a href="{% url 'my_bookings' %}" class="button">My Bookings</a>
+            <a href="{% url 'calendar_page' %}" class="button">Calendar</a>
+
+            <form method="post" action="{% url 'logout' %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="button">Logout</button>
+            </form>
+          <!--  Scroll down to uncomment the script for sms notifications
+            <div class="sms-opt-in">
+                <label for="smsToggle">Receive SMS Notifications</label>
+                <input type="checkbox" id="smsToggle" {% if user.client.sms_opt_in %}checked{% endif %}>
+            </div>
+          -->
+        </div>
+    </div>
+
+    <div id="ios-banner" style="display:none;">
+            <p>
+                Install this app on your iPhone: tap <strong>Share → Add to Home Screen</strong>.
+                <span id="ios-banner-close">✕</span>
+            </p>
+    </div>
+
+    <script>
+        // Set the current year in the footer
+     //   document.addEventListener('DOMContentLoaded', function() {
+      //  const yearSpan = document.getElementById('currentYear');
+      //  if (yearSpan) {
+      //      yearSpan.textContent = new Date().getFullYear();
+       // }
+      //  }); 
+
+        function toggleMenu() {
+                const menu = document.querySelector('.mobile-menu');
+                const hamburger = document.querySelector('.hamburger');
+                menu.classList.toggle('open');
+                hamburger.classList.toggle('open');
+            }
+    </script>
+<!--
+    <script type="module">
+  // Import Firebase scripts
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-app.js";
+  import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-messaging.js";
+  
+  const firebaseConfig = {
+    apiKey: "AIzaSyCST-ati_E1FwFwgcbVFRabewp5DLSmvSA",
+    authDomain: "developmental-baseball.firebaseapp.com",
+    projectId: "developmental-baseball",
+    messagingSenderId: "17261502109",
+    appId: "1:17261502109:web:d31a2caea6fcf985677e74"
+  };
+
+  document.getElementById("subscribeBtn").addEventListener("click", async () => {
+    const permission = await Notification.requestPermission();
+    alert("Permission result: " + permission); // debug popup
+  });
+
+  const app = initializeApp(firebaseConfig);
+  const messaging = getMessaging(app);
+
+  async function requestPermissionAndRegister() {
+  try {
+    const permission = await Notification.requestPermission();
+    if (permission === "granted") {
+      // Register service worker first
+      const registration = await navigator.serviceWorker.register('/static/firebase/firebase-messaging-sw.js');
+
+      // Then get the token using the service worker registration
+      const token = await getToken(messaging, {
+        vapidKey: "0jaeKui5vyC9kTDVh_c2_w9Lzwej95X8WsLr3SxKr-g",
+        serviceWorkerRegistration: registration
+      });
+
+      console.log("Firebase token:", token);
+
+        // Test notification immediately
+        if (Notification.permission === "granted") {
+        new Notification("Test Notification", {
+            body: "If you see this, notifications are working!",
+            icon: "/static/bookings/images_and_videos/number44.ico"
+        });
+        }
+
+      // Send the token to Django backend
+      await fetch("/register-device-token/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value
+        },
+        body: JSON.stringify({ device_token: token })
+      });
+    }
+  } catch (err) {
+    console.error("Error getting token", err);
+  }
+}
+
+  window.addEventListener('load', requestPermissionAndRegister);
+</script>
+-->
+
+    <div class="footerBottom">
+        <p>
+            Copyright &copy; <span id="currentYear"></span>; Designed by 
+            <span class="designer">Isaiah Alvarez</span> - All Rights Reserved
+        </p>
+    </div>
+
+        <script>
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register("{% static 'bookings/service-worker.js' %}")
+                .then(reg => console.log("Service Worker registered:", reg))
+                .catch(err => console.error("Service Worker error:", err));
+            }
+        </script>
+
+      <!--
+        <script>
+          document.getElementById("smsToggle").addEventListener("change", function() {
+              const isChecked = this.checked;
+              fetch("{% url 'update_sms_opt_in' %}", {
+                  method: "POST",
+                  headers: {
+                      "Content-Type": "application/x-www-form-urlencoded",
+                      "X-CSRFToken": "{{ csrf_token }}",
+                  },
+                  body: `sms_opt_in=${isChecked}`
+              })
+              .then(response => response.json())
+              .then(data => {
+                  if (data.status === "success") {
+                      alert(`SMS notifications ${data.sms_opt_in ? 'enabled' : 'disabled'}.`);
+                  } else {
+                      alert("Failed to update SMS preference.");
+                  }
+              });
+          });
+        </script>
+      -->
+</body>
+</html>

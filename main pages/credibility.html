@@ -1,0 +1,166 @@
+<!--
+Isaiah Alvarez
+08/09/2024
+My Personal Baseball Instructor Credibility (remake)
+
+-->
+{% load static%}
+
+<!DOCTYPE html>
+<html lang = "en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name = "viewport" content="width=device-width, initial-scale=1" >
+        <link rel="stylesheet" href="{% static 'bookings/Personal Baseball Instructor Credibility Page.css' %}">
+        
+        <!-- Classic ICO favicon -->
+        <link rel="icon" href="{% static 'bookings/images_and_videos/number44.ico' %}" type="image/x-icon">
+
+        <!-- PNG favicons for modern browsers -->
+        <link rel="icon" type="image/png" sizes="16x16" href="/number44-16x16.png">
+        <link rel="icon" type="image/png" sizes="32x32" href="/number44-32x32.png">
+        <link rel="icon" type="image/png" sizes="48x48" href="/number44-48x48.png">
+        <link rel="icon" type="image/png" sizes="96x96" href="/number44-96x96.png">
+
+        <!-- Apple Touch Icon (iPhone/iPad) -->
+        <link rel="apple-touch-icon" sizes="180x180" href="/number44-180x180.png">
+
+        <!-- Android / High-res icons -->
+        <link rel="icon" type="image/png" sizes="192x192" href="/number44-192x192.png">
+        <link rel="icon" type="image/png" sizes="512x512" href="/number44-512x512.png">
+
+        <!-- Web App Manifest -->
+        <link rel="manifest" href="{% static 'bookings/site.webmanifest' %}">
+        <title>Credibility</title>
+
+        <style>
+            body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url("{% static 'bookings/images_and_videos/background-image2.jpg' %}") no-repeat center center;
+            background-size: cover;
+            z-index: -1;
+            filter: blur(3px);
+            opacity: 0.2;
+            }
+        </style>
+
+    </head>
+    <body>
+        <div class="background">
+                <nav>
+                    <div class="hamburger" onclick="toggleMenu()">
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                        <div class="bar"></div>
+                    </div>
+                
+                    <li class="logo">
+                        <a href="{% url 'login' %}">
+                            <img src="{% static 'bookings/images_and_videos/number44.png' %}" alt="Logo" />
+                                <span class="pop-word top-left">click</span>
+                                <span class="pop-word top-right">here</span>
+                                <span class="pop-word bottom-left">to</span>
+                                <span class="pop-word bottom-right">book a lesson</span>
+                        </a>
+                    </li>
+            
+                    <div class="mobile-menu">
+                        <ul>
+                            <li class="home"><a href="{% url 'index' %}">Home</a></li>
+                            <li class="MyStory"><a href="{% url 'my-story' %}">My Story</a></li>
+                            <li><a href="{% url 'credibility' %}">Credibility</a></li>
+                            <li><a href="{% url 'contact' %}">Contact</a></li>
+                            <li><a href="{% url 'gallery' %}">Gallery</a></li>
+                        </ul>
+                    </div>
+                </nav>
+                <h1>
+                    My Credibility
+                </h1>
+
+                <p class="a">
+                    I attended Rio Mesa High School and played baseball all 4 years and was on Varsity my Junior and Senior Year. As a senior, I earned 1st-Team All League. I have 4 years of collegiate baseball experience.
+                    Two being in Junior College, and the last two being at the 4-year collegiate level NAIA. I graduated in Spring of 2022 with my A.S. for Transfer in Mathematics Honors along with my B.S. in Computer Science Magna Cum Laude in Spring of 2024. I am an Ex-Professional Baseball Player
+                    of the Pecos League and now currently a private baseball instructor in Oxnard, CA. 
+                    
+
+                </p>
+
+                <div class="FieldLevelContainer">
+                    <a href="https://www.fieldlevel.com/app/profile/isaiah.arisalvarez/baseball?m=3">
+                        <img src="{% static 'bookings/images_and_videos/Field Level.jpg' %}">
+                        <p>FieldLevel</p>
+                    </a>
+                    <p>
+                        This is FieldLevel. It is a recruiting app for multiple sports, including baseball, 
+                        that college coaches use to seek out players for their schools. 
+                        There are other recruiting apps such as this one, however this one 
+                        is free unlike some others that I had encountered while trying to get recruited in high school.
+                        I created a profile on here for those that need help on getting recruited. Use my profile as a template
+                        and submit as many highlights and workout videos as possible. You can also view the highlights that I have on there
+                        that showcases my skills during my time at Avila University. 
+                    </p>
+                </div>
+
+                <div class="BaseballReferenceContainer">
+                    <a href="https://www.baseball-reference.com/register/player.fcgi?id=alvare004isa">
+                        <img src="{% static 'bookings/images_and_videos/Baseball Reference.jpg' %}">
+                        <p>Baseball Reference: Isaiah Alvarez</p>
+                    </a>
+                        <p>
+                            This is Baseball Reference. It is a baseball encyclopedia that lists baseball players from 
+                            the MLB all the way down to players that played at the Juco Level and shows the legitimacy of players that played
+                            in college and beyond. If you click the link, my 
+                            profile on baseball reference will be displayed as well as my stats at AU in KcMO. Unfortunately, baseball reference
+                            does not include Pecos League stats anymore due to the inaccuracy of statistics inputted by the Pecos League. However, they are still
+                            found through the web when searched.  
+                        </p>
+
+                </div>
+
+                <div class="FrontSquatContainer">
+                    <video controls muted playsinline>
+                        <source src="{% static 'bookings/images_and_videos/fs.mp4' %}" type="video/mp4">
+                        Your browser does not support video codec. Try another browser. 
+                        
+                    </video>
+                    
+                    <strong>Strength & Agility Background</strong>
+                    
+                    <p>
+                        Growing up, I was always one of the smallest, if not, the smallest on the team. 
+                        I capped out at 5'7 around my sophomore/junior year of high school, so I knew that 
+                        I would have to show out and perform better than those that were bigger than me if 
+                        I wanted to continue playing. I also knew that I needed to gain a little bit of size 
+                        and strength in order to have a chance at competing. The video you see above is my max 
+                        front-squat of 365lbs at 170lbs bodyweight. A few of the many feats that I've accomplished include:
+                        a 6.7s 60 meter dash, a 405lbs conventional deadlift, a 275lbs one-rep max bench press, and a 4ft standing box jump.     
+                    </p>
+                    
+                </div>
+        
+        </div>
+     
+        <div class="footerBottom">
+            <p>
+                Copyright &copy; <span id="currentYear"></span>; Designed by 
+                <span class="designer">Isaiah Alvarez</span> - All Rights Reserved
+            </p>
+        </div>
+        <script>
+            function toggleMenu() {
+                const menu = document.querySelector('.mobile-menu');
+                const hamburger = document.querySelector('.hamburger');
+                menu.classList.toggle('open');
+                hamburger.classList.toggle('open');
+                }
+            document.getElementById("currentYear").textContent = new Date().getFullYear();
+        </script>
+        <script src="{% static 'bookings/Personal Baseball Instructor Credibility.js' %}"></script>
+    </body>
+</html>

@@ -1,0 +1,456 @@
+/* Personal Baseball Instructor Credibility Page CSS */
+* {box-sizing: border-box;}
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+    font-family:Georgia, 'Times New Roman', Times, serif;
+}
+.background {
+    position: relative;
+    z-index: 1;
+}
+
+/* Background image applied to body */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('../images_and_videos/background-image2.jpg') no-repeat center center;
+    background-size: cover;
+    z-index: -1;
+    filter: blur(3px);
+    opacity: 0.2;
+}
+
+
+nav{
+    list-style-type: none;
+    position: relative;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color:rgba(0,0,0,0.5);
+}
+
+nav, nav ul, nav li {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Hamburger button styles */
+.hamburger {
+  width: 40px;      /* wider than current 25px */
+  height: 40px;     /* taller than current 20px */
+  padding: 8px;     /* optional, to add some inner spacing */
+  cursor: pointer;
+  position: absolute;
+  top: 20px;
+  left: 15px;
+  z-index: 1001;
+  display: none;
+  flex-direction: column;
+  justify-content: space-between;
+
+  border: 1px solid white;
+  border-radius: 6px;
+  box-sizing: border-box;
+
+}
+
+
+.hamburger .bar {
+  height: 3px;
+  background: white;
+  width: 24px;
+  margin: 3px 0;
+  transition: 0.4s;
+}
+
+.hamburger.open .bar:nth-child(1) {
+  transform: rotate(45deg) translate(6px, 6px);
+}
+.hamburger.open .bar:nth-child(2) {
+  opacity: 0;
+}
+.hamburger.open .bar:nth-child(3) {
+  transform: rotate(-45deg) translate(4px, -5px);
+}
+
+.hamburger:hover{
+  transform: scale(1.2);
+  transition: transform 0.4s ease-in-out;
+  border-color: white;
+}
+
+nav li.home{
+  float: left;
+}
+
+nav li.MyStory{
+    font-style: italic;
+}
+
+
+li {
+    float: right;
+}
+  
+li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 30px 12px;
+    text-decoration: none;
+    letter-spacing: 2px;
+    font-size: 10px;
+    text-transform: uppercase;
+    transition: transform 0.4s ease, color 0.4s ease;
+}
+  
+li a:hover:not(.active) {
+    transform: scale(1.2);
+    color: black;
+}
+
+li.logo {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    overflow: visible;
+    z-index: 5;
+}
+
+li.logo img {
+    height: 100px;
+    display: block;
+}
+
+/* Words inside logo */
+.pop-word {
+    position: absolute;
+    color: white(255, 255, 255);
+    font-weight: bold;
+    font-size: 8px;
+    opacity: 0;
+    transform: scale(0);
+    transition: transform 0.5s ease, opacity 0.5s ease;
+    pointer-events: none;
+    z-index: 10; /* ensure words appear above logo */
+}
+
+/* Pin words slightly inside the corners */
+.top-left { 
+  top: 35%; 
+  left: -15% 
+}
+.top-right { 
+  top: 35%; 
+  right: -15%; 
+}
+.bottom-left { 
+  bottom: 35%; 
+  left: 0%; 
+}
+.bottom-right { 
+  bottom: 35%; 
+  right: -80%; 
+}
+
+
+.pop-word.show {
+    opacity: 1;
+    transform: scale(1.5);
+}
+
+
+h1{
+    text-align: center;
+    color: white;
+    text-align: center;
+    text-shadow:
+    /* Black outline around main text */
+    -1px -1px 0 black,
+     1px -1px 0 black,
+    -1px  1px 0 black,
+     1px  1px 0 black,
+
+    /* "Shadow" layer (2px offset, white text duplicated with black outline) */
+    2px 2px 0 black,
+    1px 1px 0 black,
+    3px 3px 0 black;
+
+    text-transform: uppercase;
+}
+
+p.a{
+    text-align: center;
+    padding: 15px;
+    opacity: 0;
+    transform: translateY(-20px);
+    animation: fadeInBox 0.8s forwards;
+    }
+    @keyframes fadeInBox {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+        }
+    }
+
+.FieldLevelContainer{
+    width: 30%;
+    text-align: center;
+    float: left;
+    line-height: 1.5;
+    padding-left: 15px;
+    opacity: 0;
+    transform: translateY(-20px);
+    animation: fadeInBox 2s forwards;
+    }
+    @keyframes fadeInBox {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+        }
+    }
+.FieldLevelContainer img{
+    text-align: center;
+}
+
+.FieldLevelContainer a p{
+    text-align: center;
+    color: blue;
+    text-decoration: underline blue;
+    
+}
+
+
+
+.BaseballReferenceContainer{
+    float: left;
+    width: 30%;
+    text-align: center;
+    line-height: 1.5;
+    margin-left: 70px;
+    opacity: 0;
+    transform: translateY(-20px);
+    animation: fadeInBox 3.5s forwards;
+    }
+    @keyframes fadeInBox {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+        }
+    }
+
+.BaseballReferenceContainer a p{
+    text-align: center;
+    padding: 20px;
+    color: blue;
+    text-decoration: underline blue;
+}
+
+.FrontSquatContainer{
+    width: 30%;
+    margin-right: 15px;
+    text-align: center;
+    float: right;
+    opacity: 0;
+    transform: translateY(-20px);
+    animation: fadeInBox 5s forwards;
+    }
+    @keyframes fadeInBox {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+        }
+    }
+
+.FrontSquatContainer video{
+    height: 250px;
+    width: 100%;
+    background-color: rgba(0,0,0,0.2);
+}
+
+.FrontSquatContainer strong{
+    margin-top: 100px;
+    text-align: center;
+    text-decoration: underline;
+
+}
+
+.FrontSquatContainer p{
+    line-height: 1.5;
+    margin-top: 25px;
+}
+/* Footer */
+.footerBottom{
+    background-color: rgba(0,0,0,0.5);
+    padding: 5px;
+    text-align: center;
+    font-size: 15px;
+    clear: both;
+    
+}
+
+.footerBottom p{
+    color: white;
+}
+
+.designer{
+    text-transform: uppercase;
+    font-weight: 400;
+}
+
+
+@media (max-width: 800px){
+    nav li.home{
+        float: none;
+    }
+    
+    li{
+        float: none;
+    }
+
+    li a{
+    padding: 0px 12px;
+  }
+
+  li.logo{
+    position: relative;
+    top: 0;
+    left: 0;
+    transform: none;
+    width: fit-content;
+    margin: 0 auto;
+    
+  }
+
+  li.logo img{
+    height: 125px;
+  }
+
+   .hamburger {
+    position: absolute; /* stays on top */
+    top: 15px;
+    left: 15px;
+    z-index: 1001;
+    display: flex; /* make sure it shows on mobile */
+  }
+  
+.mobile-menu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100vw;
+  background-color: rgba(0, 0, 0, 0.8);
+  z-index: 1000;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  opacity: 0;
+  transform: translateY(-80px);
+  pointer-events: none; /* Disable interaction when hidden */
+
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.mobile-menu.open {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto; /* Enable interaction when visible */
+}
+
+
+.mobile-menu li {
+    margin: 70px 0; /* adds vertical space between each tab */
+}
+  nav.mobile-menu-open li.logo img {
+    height: 100px;
+    
+  }
+
+  .mobile-menu li a:hover {
+    color: #fff;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    transition: background 0.3s;
+}
+
+  nav{
+    display: block;
+    height: auto;
+
+  }
+
+  .BaseballReferenceContainer {
+    margin-left: 0px;
+    float: none;
+  }
+
+  .FieldLevelContainer p{
+        text-align: center;
+        padding-left: 100px;
+        padding-right: 100px;
+    }
+.BaseballReferenceContainer p{
+        padding-left: 100px;
+        padding-right: 100px;
+       
+    }
+    .FrontSquatContainer p{
+        padding-left: 100px;
+        padding-right: 100px;
+    }
+    .bottom-right{
+      right: -65%;
+    }
+    .top-left { 
+      top: 35%; 
+      left: 0% 
+    }
+
+}
+
+@media (max-width: 1130px){
+    .FieldLevelContainer{
+        float: none;
+        width: 100%;
+        padding-left: 0;
+    }
+    .FieldLevelContainer p{
+        text-align: center;
+        padding-left: 50px;
+        padding-right: 50px;
+    }
+    .BaseballReferenceContainer{
+        float: none;
+        width: 100%;
+        padding-left: 0;
+        text-align: center;
+       margin-left: 0px;
+    }
+    .BaseballReferenceContainer p{
+        padding-left: 50px;
+        padding-right: 50px;
+       
+    }
+    .FrontSquatContainer{
+        float: none;
+        width: 100%;
+    }
+    .FrontSquatContainer p{
+        padding-left: 50px;
+        padding-right: 50px;
+    }
+}

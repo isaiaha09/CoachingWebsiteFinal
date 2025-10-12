@@ -1,0 +1,263 @@
+<!--
+Isaiah Alvarez
+08/09/2024
+My Personal Baseball Instructor Home Page (remake)
+-->
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{% static 'bookings/Personal Baseball Instructor Home Page.css' %}">
+    <!-- Classic ICO favicon -->
+        <link rel="icon" href="{% static 'bookings/images_and_videos/number44.ico'%}" type="image/x-icon">
+
+        <!-- PNG favicons for modern browsers -->
+        <link rel="icon" type="image/png" sizes="16x16" href="{% static 'bookings/images_and_videos/number44-16x16.png' %}">
+        <link rel="icon" type="image/png" sizes="32x32" href="{% static 'bookings/images_and_videos/number44-32x32.png' %}">
+        <link rel="icon" type="image/png" sizes="48x48" href="{% static 'bookings/images_and_videos/number44-48x48.png' %}">
+        <link rel="icon" type="image/png" sizes="96x96" href="{% static 'bookings/images_and_videos/number44-96x96.png' %}">
+
+        <!-- Apple Touch Icon (iPhone/iPad) -->
+        <link rel="apple-touch-icon" sizes="180x180" href="{% static 'bookings/images_and_videos/number44-180x180.png' %}">
+
+        <!-- Android / High-res icons -->
+        <link rel="icon" type="image/png" sizes="192x192" href="{% static 'bookings/images_and_videos/number44-192x192.png' %}">
+        <link rel="icon" type="image/png" sizes="512x512" href="{% static 'bookings/images_and_videos/number44-512x512.png' %}">
+
+
+        <!-- Web App Manifest -->
+        <link rel="manifest" href="{% static 'bookings/site.webmanifest.json' %}">
+
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+        <meta name="mobile-web-app-capable" content="yes">
+    
+    <title>Developmental Baseball</title>
+</head>
+        <style>
+            body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url("{% static 'bookings/images_and_videos/background-image2.jpg' %}") no-repeat center center;
+            background-size: cover;
+            z-index: -1;
+            filter: blur(3px);
+            opacity: 0.2;
+            }
+        </style>
+<body>
+    <div class="background">
+        <nav>
+                <div class="hamburger" onclick="toggleMenu()">
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                </div>
+
+                
+
+                <li class="logo">
+                    <a href="{% url 'login' %}">
+                        <img src="{% static 'bookings/images_and_videos/number44.png' %}" alt="Logo" />
+                        <span class="pop-word top-left">click</span>
+                            <span class="pop-word top-right">here</span>
+                            <span class="pop-word bottom-left">to</span>
+                            <span class="pop-word bottom-right">book a lesson</span>
+                    </a>
+                </li>
+
+              
+            
+                <div class="mobile-menu">
+                    <ul>
+                        <li class="home"><a href="{% url 'index' %}">Home</a></li>
+                        <li class="MyStory"><a href="{% url 'my-story' %}">My Story</a></li>
+                        <li><a href="{% url 'credibility' %}">Credibility</a></li>
+                        <li><a href="{% url 'contact' %}">Contact</a></li>
+                        <li><a href="{% url 'gallery' %}">Gallery</a></li>
+                    </ul>
+                </div>
+            </nav>
+
+        <h1>Developmental Baseball</h1>
+        <p class="a">
+            <strong>Here to help develop and prepare ball players of all ages to further their baseball careers</strong>
+        </p>
+
+        <div id="ios-banner" style="display:none;">
+            <p>
+                Install this app on your iPhone: tap <strong>Share → Add to Home Screen</strong>.
+                <span id="ios-banner-close">✕</span>
+            </p>
+        </div>
+
+        <br><br>
+        <div class="slideshow-container">
+            <div class="mySlides fade">
+                <img src="{% static 'bookings/images_and_videos/background-image1.JPG' %}" style="width:100%">
+            </div>
+            <div class="mySlides fade">
+                <img src="{% static 'bookings/images_and_videos/background-image2.jpg' %}" style="width:100%">
+            </div>
+            <div class="mySlides fade">
+                <img src="{% static 'bookings/images_and_videos/background-image3.jpg' %}" style="width:100%">
+            </div>
+            <div class="mySlides fade">
+                <img src="{% static 'bookings/images_and_videos/background-image4.jpg' %}" style="width:100%">
+            </div>
+            <div class="mySlides fade">
+                <img src="{% static 'bookings/images_and_videos/background-image5.jpg' %}" style="width:100%">
+            </div>
+            <div class="mySlides fade">
+                <img src="{% static 'bookings/images_and_videos/background-image6.jpg' %}" style="width:100%">
+            </div>
+            <div class="mySlides fade">
+                <img src="{% static 'bookings/images_and_videos/background-image7.jpg' %}" style="width:100%">
+            </div>
+            <div class="mySlides fade">
+                <img src="{% static 'bookings/images_and_videos/background-image8.jpg' %}" style="width:100%">
+            </div>
+            <div class="mySlides fade">
+               <img src="{% static 'bookings/images_and_videos/background-image9.jpg' %}" style="width:100%">
+            </div>
+            <div class="mySlides fade">
+                <video controls>
+                    <source src="{% static 'bookings/images_and_videos/44.mp4' %}">
+                </video>
+            </div>
+
+            <a class="prev" onclick="plusSlides(-1)">&#10094;</a>
+            <a class="next" onclick="plusSlides(1)">&#10095;</a>
+        </div>
+
+        <br>
+        <div style="text-align:center">
+            <span class="dot" onclick="currentSlide(1)"></span>
+            <span class="dot" onclick="currentSlide(2)"></span>
+            <span class="dot" onclick="currentSlide(3)"></span>
+            <span class="dot" onclick="currentSlide(4)"></span>
+            <span class="dot" onclick="currentSlide(5)"></span>
+            <span class="dot" onclick="currentSlide(6)"></span>
+            <span class="dot" onclick="currentSlide(7)"></span>
+            <span class="dot" onclick="currentSlide(8)"></span>
+            <span class="dot" onclick="currentSlide(9)"></span>
+            <span class="dot" onclick="currentSlide(10)"></span>
+        </div>
+
+        <h2>About Me</h2>
+        <div class="AboutMeParagraph-container">
+            <p>
+                My name is <strong>Isaiah Alvarez</strong>. I am a <strong>Collegiate || Professional Indy Baseball Player Retiree</strong> and a current private baseball instructor in Oxnard, California.
+                I was mainly an <strong>Outfielder</strong> but also have experience in <strong>Pitching</strong>, <strong>Middle Infield</strong>, and <strong>Catching</strong>.
+                I played baseball all 4 years of high school and graduated from Rio Mesa in 2019. I was on Varsity my
+                Junior and Senior year, with my senior year earning 1st Team All-League. I attended and played baseball
+                at <strong>Oxnard College</strong> for my first 2 years and got my <strong>A.S. for Transfer in Mathematics Honors</strong>. From there, I transferred and finished my Collegiate Baseball
+                Career and education at <strong>Avila University</strong> in Kansas City, Missouri with a <strong>B.S. in Computer Science</strong>. In the Summer of 2025, I participated
+                in the Pecos League with the Monterey Amberjacks as a Professional Baseball Player.
+            </p>
+        </div>
+    </div>
+    <br>
+    <div class="footerBottom">
+        <p>Copyright &copy; 2025; Designed by <span class="designer">Isaiah Alvarez</span> - All Rights Reserved</p>
+    </div>
+
+    <script src="{% static 'bookings/Personal Baseball Instructor Home Page.js' %}"></script>
+    <script>
+       function toggleMenu() {
+        const menu = document.querySelector('.mobile-menu');
+        const hamburger = document.querySelector('.hamburger');
+        menu.classList.toggle('open');
+        hamburger.classList.toggle('open');
+        }
+
+        if ('serviceWorker' in navigator) {
+                    navigator.serviceWorker.register("{% static 'bookings/service-worker.js' %}")
+                    .then(reg => console.log("Service Worker registered:", reg))
+                    .catch(err => console.error("Service Worker error:", err));
+                }
+    </script>
+<!--
+    <script type="module">
+  // Import Firebase scripts
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-app.js";
+  import { getMessaging, getToken } from "https://www.gstatic.com/firebasejs/10.1.0/firebase-messaging.js";
+  
+  const firebaseConfig = {
+    apiKey: "AIzaSyCST-ati_E1FwFwgcbVFRabewp5DLSmvSA",
+    authDomain: "developmental-baseball.firebaseapp.com",
+    projectId: "developmental-baseball",
+    messagingSenderId: "17261502109",
+    appId: "1:17261502109:web:d31a2caea6fcf985677e74"
+  };
+
+  document.getElementById("subscribeBtn").addEventListener("click", async () => {
+    const permission = await Notification.requestPermission();
+    alert("Permission result: " + permission); // debug popup
+  });
+
+  const app = initializeApp(firebaseConfig);
+  const messaging = getMessaging(app);
+
+  async function requestPermissionAndRegister() {
+  try {
+    const permission = await Notification.requestPermission();
+    if (permission === "granted") {
+      // Register service worker first
+      const registration = await navigator.serviceWorker.register('/static/firebase/firebase-messaging-sw.js');
+
+      // Then get the token using the service worker registration
+      const token = await getToken(messaging, {
+        vapidKey: "0jaeKui5vyC9kTDVh_c2_w9Lzwej95X8WsLr3SxKr-g",
+        serviceWorkerRegistration: registration
+      });
+
+      console.log("Firebase token:", token);
+
+      // Send the token to Django backend
+      await fetch("/register-device-token/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-CSRFToken": document.querySelector('[name=csrfmiddlewaretoken]').value
+        },
+        body: JSON.stringify({ device_token: token })
+      });
+    }
+  } catch (err) {
+    console.error("Error getting token", err);
+  }
+}
+
+  window.addEventListener('load', requestPermissionAndRegister);
+</script>
+-->
+    <script>
+    // Detect iOS and Safari
+    const isIos = /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase());
+    const isInStandalone = ('standalone' in window.navigator) && window.navigator.standalone;
+
+    if (isIos && !isInStandalone) {
+        const banner = document.getElementById('ios-banner');
+        banner.style.display = 'block';
+
+        document.getElementById('ios-banner-close').onclick = () => {
+        banner.style.display = 'none';
+        localStorage.setItem('ios-banner-closed', 'true');
+        };
+
+        // Hide if user closed previously
+        if (localStorage.getItem('ios-banner-closed') === 'true') {
+        banner.style.display = 'none';
+        }
+    }
+    </script>
+</body>
+</html>

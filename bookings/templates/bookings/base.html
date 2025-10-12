@@ -1,0 +1,90 @@
+<!--
+Isaiah Alvarez
+10/01/2025
+base.html
+-->
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="{% static 'bookings/base.css' %}">
+    <!-- Classic ICO favicon -->
+        <link rel="icon" href="{% static 'bookings/images_and_videos/number44.ico'%}" type="image/x-icon">
+
+        <!-- PNG favicons for modern browsers -->
+        <link rel="icon" type="image/png" sizes="16x16" href="{% static 'bookings/images_and_videos/number44-16x16.png' %}">
+        <link rel="icon" type="image/png" sizes="32x32" href="{% static 'bookings/images_and_videos/number44-32x32.png' %}">
+        <link rel="icon" type="image/png" sizes="48x48" href="{% static 'bookings/images_and_videos/number44-48x48.png' %}">
+        <link rel="icon" type="image/png" sizes="96x96" href="{% static 'bookings/images_and_videos/number44-96x96.png' %}">
+
+        <!-- Apple Touch Icon (iPhone/iPad) -->
+        <link rel="apple-touch-icon" sizes="180x180" href="{% static 'bookings/images_and_videos/number44-180x180.png' %}">
+
+        <!-- Android / High-res icons -->
+        <link rel="icon" type="image/png" sizes="192x192" href="{% static 'bookings/images_and_videos/number44-192x192.png' %}">
+        <link rel="icon" type="image/png" sizes="512x512" href="{% static 'bookings/images_and_videos/number44-512x512.png' %}">
+
+
+        <!-- Web App Manifest -->
+        <link rel="manifest" href="{% static 'bookings/site.webmanifest.json' %}">
+
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+        <meta name="mobile-web-app-capable" content="yes">
+
+    <title>{% block title %}Developmental Baseball{% endblock %}</title>
+    {% block extra_head %}{% endblock %}
+</head>
+<body>
+    <div class="background">
+        <nav>
+            <div class="hamburger" onclick="toggleMenu()">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+            </div>
+
+            <div class="logo">
+                <a href="{% url 'login' %}">
+                    <img src="{% static 'bookings/images_and_videos/number44.png' %}" alt="Logo" />
+                    <span class="pop-word top-left">click</span>
+                    <span class="pop-word top-right">here</span>
+                    <span class="pop-word bottom-left">to</span>
+                    <span class="pop-word bottom-right">book a lesson</span>
+                </a>
+            </div>
+
+            <div class="mobile-menu">
+                <ul>
+                    <li><a href="{% url 'index' %}">Home</a></li>
+                    <li><a href="{% url 'my-story' %}">My Story</a></li>
+                    <li><a href="{% url 'credibility' %}">Credibility</a></li>
+                    <li><a href="{% url 'contact' %}">Contact</a></li>
+                    <li><a href="{% url 'gallery' %}">Gallery</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        {% block content %}{% endblock %}
+    </div>
+
+    <div class="footerBottom">
+        <p>Copyright &copy; {{ now|date:"Y" }}; Designed by 
+           <span class="designer">Isaiah Alvarez</span> - All Rights Reserved</p>
+    </div>
+
+        <script>
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register("{% static 'bookings/service-worker.js' %}")
+                .then(reg => console.log("Service Worker registered:", reg))
+                .catch(err => console.error("Service Worker error:", err));
+            }
+        </script>
+
+    <script src="{% static 'bookings/base.js' %}"></script>
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

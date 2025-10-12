@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+{% load static %}
+
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="{% static 'bookings/login.css' %}">
+
+        <!-- Classic ICO favicon -->
+        <link rel="icon" href="{% static 'bookings/images_and_videos/number44.ico'%}" type="image/x-icon">
+
+        <!-- PNG favicons for modern browsers -->
+        <link rel="icon" type="image/png" sizes="16x16" href="{% static 'bookings/images_and_videos/number44-16x16.png' %}">
+        <link rel="icon" type="image/png" sizes="32x32" href="{% static 'bookings/images_and_videos/number44-32x32.png' %}">
+        <link rel="icon" type="image/png" sizes="48x48" href="{% static 'bookings/images_and_videos/number44-48x48.png' %}">
+        <link rel="icon" type="image/png" sizes="96x96" href="{% static 'bookings/images_and_videos/number44-96x96.png' %}">
+
+        <!-- Apple Touch Icon (iPhone/iPad) -->
+        <link rel="apple-touch-icon" sizes="180x180" href="{% static 'bookings/images_and_videos/number44-180x180.png' %}">
+
+        <!-- Android / High-res icons -->
+        <link rel="icon" type="image/png" sizes="192x192" href="{% static 'bookings/images_and_videos/number44-192x192.png' %}">
+        <link rel="icon" type="image/png" sizes="512x512" href="{% static 'bookings/images_and_videos/number44-512x512.png' %}">
+
+
+        <!-- Web App Manifest -->
+        <link rel="manifest" href="{% static 'bookings/site.webmanifest.json' %}">
+
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+        <meta name="mobile-web-app-capable" content="yes">
+
+        <style>
+            body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url("{% static 'bookings/images_and_videos/background-image2.jpg' %}") no-repeat center center;
+            background-size: cover;
+            z-index: -1;
+            filter: blur(3px);
+            opacity: 0.2;
+            }
+        </style>
+
+        <title>Athlete's Login</title>
+    </head>
+    <body>
+        <nav>
+            <div class="hamburger" onclick="toggleMenu()">
+                <div class="bar"></div>
+                <div class="bar"></div>
+                <div class="bar"></div>
+            </div>
+
+            <li class="logo">
+                <a href="{% url 'login' %}">
+                    <img src="{% static 'bookings/images_and_videos/number44.png' %}" alt="Logo" />
+                </a>
+            </li>
+
+            <div class="mobile-menu">
+                <ul>
+                    <li class="home"><a href="{% url 'index' %}">Home</a></li>
+                    <li class="MyStory"><a href="{% url 'my-story' %}">My Story</a></li>
+                    <li><a href="{% url 'credibility' %}">Credibility</a></li>
+                    <li><a href="{% url 'contact' %}">Contact</a></li>
+                    <li><a href="{% url 'gallery' %}">Gallery</a></li>
+                </ul>
+            </div>
+        </nav>
+
+        <div id="ios-banner" style="display:none;">
+            <p>
+                Install this app on your iPhone: tap <strong>Share → Add to Home Screen</strong>.
+                <span id="ios-banner-close">✕</span>
+            </p>
+        </div>
+
+        <div class="login-container">
+            <div class="login-box">
+                <h1>Athlete's Login</h1>
+                {% if messages %}
+                    <ul class="messages">
+                        {% for message in messages %}
+                            <li class="{{ message.tags }}">{{ message }}</li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+                <form method="post">
+                    {% csrf_token %}
+
+                    <p>
+                        {{ form.username.label_tag }}
+                        {{ form.username }}
+                    </p>
+
+                    <p>
+                        {{ form.password.label_tag }}
+                        {{ form.password }}
+                    </p>
+
+                    <p>
+                        <label>
+                            {{ form.remember_me }} Remember me
+                        </label>
+                    </p>
+
+                    <button type="submit">Login</button>
+                </form>
+                <p>Don't have an account? <a href="{% url 'signup' %}">Register Here</a></p>
+                <p><a href="{% url 'password_reset' %}">Forgot Password?</a></p>
+                <p><a href="{% url 'forgot_username' %}">Forgot Username?</a></p>
+            </div>
+        </div>
+        <div class="footerBottom">
+            <p>
+                Copyright &copy; <span id="currentYear"></span>; Designed by 
+                <span class="designer">Isaiah Alvarez</span> - All Rights Reserved
+            </p>
+        </div>
+        <script>
+            function toggleMenu() {
+                const menu = document.querySelector('.mobile-menu');
+                const hamburger = document.querySelector('.hamburger');
+                menu.classList.toggle('open');
+                hamburger.classList.toggle('open');
+            }
+              document.getElementById("currentYear").textContent = new Date().getFullYear();
+              
+              if ('serviceWorker' in navigator) {
+                    navigator.serviceWorker.register("{% static 'bookings/service-worker.js' %}")
+                    .then(reg => console.log("Service Worker registered:", reg))
+                    .catch(err => console.error("Service Worker error:", err));
+                }
+        </script>
+
+        <script>
+            // Detect iOS and Safari
+            const isIos = /iphone|ipad|ipod/.test(window.navigator.userAgent.toLowerCase());
+            const isInStandalone = ('standalone' in window.navigator) && window.navigator.standalone;
+
+            if (isIos && !isInStandalone) {
+                const banner = document.getElementById('ios-banner');
+                banner.style.display = 'block';
+
+                document.getElementById('ios-banner-close').onclick = () => {
+                banner.style.display = 'none';
+                localStorage.setItem('ios-banner-closed', 'true');
+                };
+
+                // Hide if user closed previously
+                if (localStorage.getItem('ios-banner-closed') === 'true') {
+                banner.style.display = 'none';
+                }
+            }
+            </script>
+    </body>
+</html>

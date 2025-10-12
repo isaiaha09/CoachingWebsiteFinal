@@ -1,0 +1,257 @@
+<!--
+Isaiah Alvarez
+08/09/2024
+My Personal Baseball Instructor Featured page (remake)
+
+-->
+{% load static %}
+
+<!DOCTYPE html>
+<html lang = "en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name = "viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="{% static 'bookings/Personal Baseball Instructor Gallery' %}.css">
+        
+        <!-- Classic ICO favicon -->
+        <link rel="icon" href="{% static 'bookings/images_and_videos/number44.ico'%}" type="image/x-icon">
+
+        <!-- PNG favicons for modern browsers -->
+        <link rel="icon" type="image/png" sizes="16x16" href="{% static 'bookings/images_and_videos/number44-16x16.png' %}">
+        <link rel="icon" type="image/png" sizes="32x32" href="{% static 'bookings/images_and_videos/number44-32x32.png' %}">
+        <link rel="icon" type="image/png" sizes="48x48" href="{% static 'bookings/images_and_videos/number44-48x48.png' %}">
+        <link rel="icon" type="image/png" sizes="96x96" href="{% static 'bookings/images_and_videos/number44-96x96.png' %}">
+
+        <!-- Apple Touch Icon (iPhone/iPad) -->
+        <link rel="apple-touch-icon" sizes="180x180" href="{% static 'bookings/images_and_videos/number44-180x180.png' %}">
+
+        <!-- Android / High-res icons -->
+        <link rel="icon" type="image/png" sizes="192x192" href="{% static 'bookings/images_and_videos/number44-192x192.png' %}">
+        <link rel="icon" type="image/png" sizes="512x512" href="{% static 'bookings/images_and_videos/number44-512x512.png' %}">
+
+
+        <!-- Web App Manifest -->
+        <link rel="manifest" href="{% static 'bookings/site.webmanifest.json' %}">
+
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+        <meta name="mobile-web-app-capable" content="yes">
+
+        <script src="{% static 'bookings/Personal Baseball Instructor Gallery.js' %}"></script>
+
+        <style>
+            body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url("{% static 'bookings/images_and_videos/background-image2.jpg' %}") no-repeat center center;
+            background-size: cover;
+            z-index: -1;
+            filter: blur(3px);
+            opacity: 0.2;
+            }
+        </style>
+
+        <title>Gallery</title>
+    </head>
+    <body>
+        <div class="background">
+            <nav>
+                <div class="hamburger" onclick="toggleMenu()">
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                    <div class="bar"></div>
+                </div>
+
+                
+
+                <li class="logo">
+                    <a href="{% url 'login' %}">
+                        <img src="{% static 'bookings/images_and_videos/number44.png' %}" alt="Logo" />
+                        <span class="pop-word top-left">click</span>
+                            <span class="pop-word top-right">here</span>
+                            <span class="pop-word bottom-left">to</span>
+                            <span class="pop-word bottom-right">book a lesson</span>
+                    </a>
+                </li>
+
+              
+            
+                <div class="mobile-menu">
+                    <ul>
+                        <li class="home"><a href="{% url 'index' %}">Home</a></li>
+                        <li class="MyStory"><a href="{% url 'my-story' %}">My Story</a></li>
+                        <li><a href="{% url 'credibility' %}">Credibility</a></li>
+                        <li><a href="{% url 'contact' %}">Contact</a></li>
+                        <li><a href="{% url 'gallery' %}">Gallery</a></li>
+                    </ul>
+                </div>
+            </nav>
+            <h1>
+                Gallery
+            </h1>
+
+            <p class="a">
+                Here are a few more photos of me and a couple of featured highlights. 
+                You can view more highlights of mine on 
+                my Field Level recruiting profile under Credibility. 
+            </p>
+
+            <br>
+
+            <h2>
+                <strong>Photos</strong>
+            </h2>
+
+            <div class="slideshow-container">
+
+                <div class="mySlides fade">
+                    <img src="{% static 'bookings/images_and_videos/photo1.jpg' %}" style="width: 100%">
+                </div>
+
+                <div class="mySlides fade">
+                    <img src="{% static 'bookings/images_and_videos/photo2.jpg' %}" style="width: 100%">
+                </div>
+
+                <div class="mySlides fade">
+                    <img src="{% static 'bookings/images_and_videos/photo3.JPG' %}" style="width: 100%">
+                </div>
+
+                <div class="mySlides fade">
+                    <img src="{% static 'bookings/images_and_videos/photo4.jpg' %}" style="width: 100%">
+                </div>
+
+                <div class="mySlides fade">
+                    <img src="{% static 'bookings/images_and_videos/photo5.JPG' %}" style="width: 100%">
+                </div>
+
+                <div class="mySlides fade">
+                    <img src="{% static 'bookings/images_and_videos/photo6.jpg' %}" style="width: 100%">
+                </div>
+
+                <div class="mySlides fade">
+                    <img src="{% static 'bookings/images_and_videos/photo7.jpg' %}" style="width: 100%">
+                </div>
+
+                <div class="mySlides fade">
+                    <img src="{% static 'bookings/images_and_videos/photo8.jpg' %}" style="width: 100%">
+                </div>
+
+                <div class="mySlides fade">
+                    <img src="{% static 'bookings/images_and_videos/photo10.jpg' %}" style="width: 100%">
+                </div>
+
+                <div class="mySlides fade">
+                    <img src="{% static 'bookings/images_and_videos/photo11.JPG' %}" style="width: 100%">
+                </div>
+            
+                <a class="prev" onclick="topSlideShow.plusSlides(-1)">&#10094;</a>
+                <a class="next" onclick="topSlideShow.plusSlides(1)">&#10095;</a>
+            </div>
+
+            <br>
+
+            <h3>
+                <strong>Featured Highlights</strong>
+            </h3>
+
+            <div class="slideshow-container2">
+            
+                <div class="mySlides2 fade2">
+                    <video controls>
+                        <source src="{% static 'bookings/images_and_videos/video1.mov' %}">
+                    </video>
+                </div>
+
+                <div class="mySlides2 fade2">
+                    <video controls>
+                        <source src="{% static 'bookings/images_and_videos/video2.mov' %}">
+                    </video>
+                </div>
+
+                <div class="mySlides2 fade2">
+                    <video controls>
+                        <source src="{% static 'bookings/images_and_videos/video3.mov' %}">
+                    </video>
+                </div>
+
+                <div class="mySlides2 fade2">
+                    <video controls>
+                        <source src="{% static 'bookings/images_and_videos/video4.mov' %}">
+                    </video>
+                </div>
+
+                <div class="mySlides2 fade2">
+                    <video controls>
+                        <source src="{% static 'bookings/images_and_videos/video5.mov' %}">
+                    </video>
+                </div>
+
+                <div class="mySlides2 fade2">
+                    <video controls>
+                        <source src="{% static 'bookings/images_and_videos/video6.mov' %}">
+                    </video>
+                </div>
+
+                <div class="mySlides2 fade2">
+                    <video controls>
+                        <source src="{% static 'bookings/images_and_videos/video7.mov' %}">
+                    </video>
+                </div>
+
+                <div class="mySlides2 fade2">
+                    <video controls>
+                        <source src="{% static 'bookings/images_and_videos/video8.mov' %}">
+                    </video>
+                </div>
+
+                <div class="mySlides2 fade2">
+                    <video controls>
+                        <source src="{% static 'bookings/images_and_videos/video9.mov' %}">
+                    </video>
+                </div>
+
+                <div class="mySlides2 fade2">
+                    <video controls>
+                        <source src="{% static 'bookings/images_and_videos/video10.mov' %}">
+                    </video>
+                </div>
+
+                <div class="mySlides2 fade2">
+                    <video controls>
+                        <source src="{% static 'bookings/images_and_videos/video11.mov' %}">
+                    </video>
+                </div>
+            
+                <a class="prev" onclick="bottomSlideShow.plusSlides(-1)">&#10094;</a>
+                <a class="next" onclick="bottomSlideShow.plusSlides(1)">&#10095;</a>
+            </div>
+            <br>
+        </div>
+        <div class="footerBottom">
+            <p>
+                Copyright &copy; <span id="currentYear"></span>; Designed by 
+                <span class="designer">Isaiah Alvarez</span> - All Rights Reserved
+            </p>
+        </div>
+        <script>
+            function toggleMenu() {
+                const menu = document.querySelector('.mobile-menu');
+                const hamburger = document.querySelector('.hamburger');
+                menu.classList.toggle('open');
+                hamburger.classList.toggle('open');
+                }
+            document.getElementById("currentYear").textContent = new Date().getFullYear();
+            
+            if ('serviceWorker' in navigator) {
+                    navigator.serviceWorker.register("{% static 'bookings/service-worker.js' %}")
+                    .then(reg => console.log("Service Worker registered:", reg))
+                    .catch(err => console.error("Service Worker error:", err));
+                }
+        </script>
+    </body>
+</html>

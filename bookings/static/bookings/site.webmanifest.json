@@ -1,0 +1,22 @@
+
+{
+  "name": "Developmental Baseball",
+  "short_name": "DB",
+  "icons": [
+    {
+      "src": "/static/bookings/images_and_videos/number44-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/static/bookings/images_and_videos/number44-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#ffffff",
+  "background_color": "#ffffff",
+  "display": "standalone",
+  "start_url": "/"
+}
+

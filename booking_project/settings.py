@@ -33,7 +33,7 @@ SECRET_KEY = 'django-insecure-*84j*ujta6y0l#o^pmhp%pz_0&+^w%0i2v@9+49s-6gn9uloeq
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'nonpendant-profligately-tessa.ngrok-free.dev']
+ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'nonpendant-profligately-tessa.ngrok-free.dev', 'coachalvarez44.com', '.onrender.com']
 
 LOGIN_URL = '/login/'   # Or any URL you want for your login page
 

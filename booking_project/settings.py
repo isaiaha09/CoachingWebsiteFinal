@@ -153,6 +153,7 @@ EMAIL_HOST = 'smtp-relay.brevo.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
+EMAIL_RECEIVER = os.getenv('EMAIL_RECEIVER')
 EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
 EMAIL_HOST_PASSWORD = os.getenv('BREVO_SMTP_KEY')
 BREVO_API_KEY = os.getenv('BREVO_API_KEY')
@@ -161,6 +162,7 @@ DEFAULT_FROM_EMAIL = 'Developmental Baseball <noreply@coachalvarez44.com>'
 
 
 # Keep user logged in even after closing the browser
+
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 TWILIO_ACCOUNT_SID = os.getenv('TWILIO_ACCOUNT_SID')

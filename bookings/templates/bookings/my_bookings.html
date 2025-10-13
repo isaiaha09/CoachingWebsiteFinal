@@ -141,11 +141,17 @@
                 }
         </script>
         <script>
+          // Fade out only Django messages (not the top info alert)
           setTimeout(() => {
-            const alert = document.querySelector('.alert');
-            if (alert) alert.style.display = 'none';
-          }, 5000); // hides after 5 seconds
+            const messages = document.querySelectorAll('.alert-container .alert');
+            messages.forEach(alert => {
+              alert.style.transition = 'opacity 1s ease';
+              alert.style.opacity = '0';
+              setTimeout(() => alert.remove(), 1000); // remove after fade
+            });
+          }, 5000); // starts fading after 5 seconds
         </script>
+
         <div class="footerBottom">
           <p>
               Copyright &copy; <span id="currentYear"></span>; Designed by 

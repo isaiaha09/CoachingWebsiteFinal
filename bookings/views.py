@@ -343,7 +343,11 @@ class CustomLoginView(LoginView):
             self.request.session.set_expiry(60 * 60 * 24 * 30)
         else:
             # Session lasts 30 days
-            self.request.session.flush()
+            self.request.session.set_expiry(0)
+
+            for key in list(self.request.session.keys()):
+                if key != '_auth_user_id':  # Keep the authenticated user for this login
+                    del self.request.session[key]
 
         return response
 

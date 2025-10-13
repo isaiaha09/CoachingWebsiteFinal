@@ -338,12 +338,12 @@ class CustomLoginView(LoginView):
         response = super().form_valid(form)
 
         # Handle Remember Me
-        if not form.cleaned_data.get("remember_me"):
+        if form.cleaned_data.get("remember_me"):
             # Session will expire when the browser closes
-            self.request.session.set_expiry(0)
+            self.request.session.set_expiry(60 * 60 * 24 * 30)
         else:
             # Session lasts 30 days
-            self.request.session.set_expiry(60 * 60 * 24 * 30)
+            self.request.session.set_expiry(0)
 
         return response
 

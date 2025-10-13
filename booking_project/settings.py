@@ -161,8 +161,7 @@ DEFAULT_FROM_EMAIL = 'Developmental Baseball <noreply@coachalvarez44.com>'
 
 
 # Keep user logged in even after closing the browser
-SESSION_COOKIE_AGE = 1209600 * 2  # 4 weeks in seconds
-SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 
 TWILIO_ACCOUNT_SID = os.getenv('TWILIO_ACCOUNT_SID')
 TWILIO_AUTH_TOKEN = os.getenv('TWILIO_AUTH_TOKEN')

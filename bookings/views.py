@@ -340,9 +340,8 @@ class CustomLoginView(LoginView):
             self.request.session.set_expiry(60*60*24*30)  # 30 days
         else:
             # Delete everything except the current user login
-            self.request.session.flush()
-            # Re-login the user for this session only
-            login(self.request, form.get_user())
+            self.request.session.set_expiry(0)
+       
 
         return response
     def dispatch(self, request, *args, **kwargs):

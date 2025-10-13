@@ -290,33 +290,34 @@ def book_lesson(request):
 
     return render(request, "bookings/booking_form.html", {"form": form})
 
+@login_required
 def cancel_booking(request, booking_id):
     booking = get_object_or_404(Booking, id=booking_id, client__user=request.user)
 
-    # Capture booking details before deletion
+    # Capture booking details
     lesson_name = booking.lesson_type.name
     booking_date = booking.date
     booking_time = booking.start_time.strftime("%I:%M %p")
     client_email = booking.client.email
     client_first_name = booking.client.first_name
 
-    # Delete the booking
+    # Delete booking
     booking.delete()
 
-    # Send cancellation email to client
-    send_mail(
-        subject="Lesson Cancellation Confirmation",
-        message=(
-            f"Hi {client_first_name},\n\n"
-            f"Your {lesson_name} lesson scheduled for {booking_date} at {booking_time} "
-            "has been successfully cancelled.\n\n"
-            "Thank you!"
-        ),
-        from_email="noreply@coachalvarez44.com",
-        recipient_list=[client_email],
-        fail_silently=False,
+    # Send cancellation email using Brevo
+    send_booking_mail(
+        client_email,
+        {
+            "first_name": client_first_name,
+            "lesson_type": lesson_name,
+            "date": booking_date.strftime('%b %d, %Y'),
+            "start_time": booking_time,
+            "subject": "Lesson Cancellation Confirmation"
+        },
+        custom_message=f"Hi {client_first_name},\n\nYour {lesson_name} lesson scheduled for {booking_date} at {booking_time} has been successfully cancelled.\n\nThank you!"
     )
 
+    messages.success(request, "Your booking has been cancelled. A confirmation email has been sent.")
     return redirect("my_bookings")
 
 

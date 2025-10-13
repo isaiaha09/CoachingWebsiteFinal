@@ -334,23 +334,17 @@ class CustomLoginView(LoginView):
         return super().form_invalid(form)
 
     def form_valid(self, form):
-        # Let the parent LoginView handle authentication + login
         response = super().form_valid(form)
 
-        # Handle Remember Me
         if form.cleaned_data.get("remember_me"):
-            # Session will expire when the browser closes
-            self.request.session.set_expiry(60 * 60 * 24 * 30)
+            self.request.session.set_expiry(60*60*24*30)  # 30 days
         else:
-            # Session lasts 30 days
-            self.request.session.set_expiry(0)
-
-            for key in list(self.request.session.keys()):
-                if key != '_auth_user_id':  # Keep the authenticated user for this login
-                    del self.request.session[key]
+            # Delete everything except the current user login
+            self.request.session.flush()
+            # Re-login the user for this session only
+            login(self.request, form.get_user())
 
         return response
-
     def dispatch(self, request, *args, **kwargs):
     # If the session has expired, user will be logged out automatically.
     # Only redirect if you *really* want to prevent logged-in users from seeing login page.

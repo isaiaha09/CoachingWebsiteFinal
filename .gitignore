@@ -35,3 +35,6 @@ media/
 # pycache
 *.pyc
 __pycache__/
+
+# Ignore all mp4 videos in Firebase public folder
+firebase_hosting/public/videos/*.mp4

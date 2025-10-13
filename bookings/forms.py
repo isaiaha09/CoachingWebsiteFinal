@@ -105,8 +105,6 @@ class ForgotUsernameForm(forms.Form):
 class CustomLoginForm(AuthenticationForm):
     remember_me = forms.BooleanField(required=False, initial=False)
 
-from django import forms
-from .models import BlockedTime
 
 class BlockMultipleDaysForm(forms.ModelForm):
     start_date = forms.DateField(label="Start Date", widget=forms.SelectDateWidget)

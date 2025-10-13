@@ -343,7 +343,7 @@ class CustomLoginView(LoginView):
             self.request.session.set_expiry(60 * 60 * 24 * 30)
         else:
             # Session lasts 30 days
-            self.request.session.set_expiry(0)
+            self.request.session.flush()
 
         return response
 

@@ -238,14 +238,6 @@ def calendar_page(request):
     return render(request, 'bookings/calendar.html', {"blocked_dates": blocked_dates})
 
 
-# ==========================
-# CANCEL BOOKING
-# ==========================
-@login_required
-def cancel_booking(request, booking_id):
-    booking = get_object_or_404(Booking, id=booking_id, client__user=request.user)
-    from django.core.mail import send_mail
-
 @login_required
 def book_lesson(request):
     initial_data = {}

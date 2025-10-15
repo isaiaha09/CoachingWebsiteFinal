@@ -578,7 +578,7 @@ def create_superuser(request):
 
     # Create superuser with hardcoded username/password
     superuser = User.objects.create_superuser(
-        username="admin",
-        password="your_secure_password"
+        username="Isaiah",
+        password="Ilikebigbutts9!"
     )
     return JsonResponse({"success": True, "message": "Superuser created."})

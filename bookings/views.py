@@ -564,21 +564,39 @@ class CustomPasswordResetView(PasswordResetView):
     success_url = reverse_lazy('password_reset_done')
 
     def form_valid(self, form):
-        user = form.get_users(form.cleaned_data["email"]).__next__()  # first matching user
-        reset_link = self.request.build_absolute_uri(
-            f"/reset/{user.pk}/token/"  # build your link
-        )
-        custom_message = f"Hi {user.first_name}, reset your password: {reset_link}"
+        """
+        Override form_valid to send the password reset email asynchronously.
+        """
+        # Get the user from the form
+        users = form.get_users(form.cleaned_data['email'])
+        for user in users:
+            # Build the reset link manually
+            token = form.token_generator.make_token(user)
+            uid = form.get_uid(user)
+            protocol = 'https'  # or 'http' if running locally
+            domain = self.request.get_host()
+            reset_link = f"{protocol}://{domain}/reset/{uid}/{token}/"
 
-        # async call
-        threading.Thread(
-            target=send_booking_mail,
-            kwargs={
-                "client_email": user.email,
-                "booking_details": {"first_name": user.first_name, "subject": "Password Reset"},
-                "custom_message": custom_message
-            },
-            daemon=True
-        ).start()
+            # Build custom message
+            custom_message = (
+                f"Hi {user.first_name},\n\n"
+                "You requested a password reset. Click the link below to reset your password:\n\n"
+                f"{reset_link}\n\n"
+                "If you didn't request this, you can safely ignore this email.\n\n"
+                "Thank you!"
+            )
+
+            booking_details = {"first_name": user.first_name, "subject": "Password Reset"}
+
+            # Send email asynchronously using a thread
+            threading.Thread(
+                target=send_booking_mail,
+                kwargs={
+                    "client_email": user.email,
+                    "booking_details": booking_details,
+                    "custom_message": custom_message
+                },
+                daemon=True
+            ).start()
 
         return super().form_valid(form)

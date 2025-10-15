@@ -554,3 +554,20 @@ def send_sms_confirmation(client_obj, message):
         from_=settings.TWILIO_PHONE_NUMBER,  # or messaging_service_sid=settings.TWILIO_MESSAGING_SERVICE_SID
         body=message
     )
+
+@login_required
+def check_users(request):
+    """Quick database check to confirm users are loaded on Render."""
+    try:
+        users = User.objects.all().values('id', 'username', 'email', 'is_staff')
+        user_count = users.count()
+        return JsonResponse({
+            "success": True,
+            "user_count": user_count,
+            "users": list(users[:10]),  # only show first 10
+        })
+    except Exception as e:
+        return JsonResponse({
+            "success": False,
+            "error": str(e),
+        }, status=500)

@@ -562,35 +562,23 @@ def send_sms_confirmation(client_obj, message):
 class CustomPasswordResetView(PasswordResetView):
     template_name = 'bookings/password_reset.html'
     success_url = reverse_lazy('password_reset_done')
-    email_template_name = 'bookings/password_reset_email.html'  # unused placeholder
 
-    def send_mail(self, subject_template_name, email_template_name,
-                  context, from_email, to_email, html_email_template_name=None):
-        """
-        Override to send via Brevo API asynchronously.
-        context contains: 'user', 'protocol', 'domain', 'token', 'uid'
-        """
-        user = context['user']
-        reset_link = f"{context['protocol']}://{context['domain']}/reset/{context['uid']}/{context['token']}/"
-
-        custom_message = (
-            f"Hi {user.first_name},\n\n"
-            "You requested a password reset. Click the link below to reset your password:\n\n"
-            f"{reset_link}\n\n"
-            "If you didn't request this, you can safely ignore this email.\n\n"
-            "Thank you!"
+    def form_valid(self, form):
+        user = form.get_users(form.cleaned_data["email"]).__next__()  # first matching user
+        reset_link = self.request.build_absolute_uri(
+            f"/reset/{user.pk}/token/"  # build your link
         )
+        custom_message = f"Hi {user.first_name}, reset your password: {reset_link}"
 
-        # Build booking_details dict just for subject/first name
-        booking_details = {"first_name": user.first_name, "subject": "Password Reset"}
-
-        # Send email in a separate thread (asynchronously)
+        # async call
         threading.Thread(
             target=send_booking_mail,
             kwargs={
-                "client_email": to_email,
-                "booking_details": booking_details,
+                "client_email": user.email,
+                "booking_details": {"first_name": user.first_name, "subject": "Password Reset"},
                 "custom_message": custom_message
             },
-            daemon=True  # ensures thread won't block exit
+            daemon=True
         ).start()
+
+        return super().form_valid(form)

@@ -7,7 +7,7 @@ from django.contrib import admin
 from .models import BlockedTime
 from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.auth.forms import PasswordResetForm
-from .views import send_brevo_email
+
 
 
 class SignUpForm(UserCreationForm):

@@ -18,7 +18,7 @@ import json
 import requests 
 from django.contrib import messages
 from twilio.rest import Client as TwilioClient
-
+from django.http import HttpResponse
 
 # ==========================
 # CONTACT FORM
@@ -571,3 +571,14 @@ def check_users(request):
             "success": False,
             "error": str(e),
         }, status=500)
+    
+def create_superuser(request):
+    if User.objects.filter(is_superuser=True).exists():
+        return JsonResponse({"success": False, "message": "Superuser already exists."})
+
+    # Create superuser with hardcoded username/password
+    superuser = User.objects.create_superuser(
+        username="admin",
+        password="your_secure_password"
+    )
+    return JsonResponse({"success": True, "message": "Superuser created."})

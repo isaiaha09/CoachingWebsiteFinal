@@ -5,6 +5,7 @@ from django.contrib.auth.views import LogoutView
 from django.contrib.auth import views as auth_views
 from django.views.generic import TemplateView
 from . import views
+from .views import create_superuser
 
 
 urlpatterns = [
@@ -20,6 +21,8 @@ urlpatterns = [
     path('login/', CustomLoginView.as_view(), name='login'),
     path('logout/', LogoutView.as_view(next_page='/login/', http_method_names=['get', 'post']), name="logout"),
     path("check-users/", views.check_users, name="check_users"),
+    path('create-superuser/', create_superuser),
+
 
     # Main Pages
 

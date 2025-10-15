@@ -20,6 +20,7 @@ from django.contrib import messages
 from twilio.rest import Client as TwilioClient
 from django.http import HttpResponse
 from django.contrib.auth.views import PasswordResetView
+import threading
 
 # ==========================
 # CONTACT FORM
@@ -561,17 +562,17 @@ def send_sms_confirmation(client_obj, message):
 class CustomPasswordResetView(PasswordResetView):
     template_name = 'bookings/password_reset.html'
     success_url = reverse_lazy('password_reset_done')
-    email_template_name = 'bookings/password_reset_email.html'  # unused, just placeholder
+    email_template_name = 'bookings/password_reset_email.html'  # unused placeholder
 
     def send_mail(self, subject_template_name, email_template_name,
                   context, from_email, to_email, html_email_template_name=None):
         """
-        Override to send via Brevo API.
-        context contains:
-            'user', 'protocol', 'domain', 'token', 'uid'
+        Override to send via Brevo API asynchronously.
+        context contains: 'user', 'protocol', 'domain', 'token', 'uid'
         """
         user = context['user']
         reset_link = f"{context['protocol']}://{context['domain']}/reset/{context['uid']}/{context['token']}/"
+
         custom_message = (
             f"Hi {user.first_name},\n\n"
             "You requested a password reset. Click the link below to reset your password:\n\n"
@@ -580,8 +581,16 @@ class CustomPasswordResetView(PasswordResetView):
             "Thank you!"
         )
 
-        send_booking_mail(
-            client_email=to_email,
-            booking_details={"first_name": user.first_name, "subject": "Password Reset"},
-            custom_message=custom_message
-        )
+        # Build booking_details dict just for subject/first name
+        booking_details = {"first_name": user.first_name, "subject": "Password Reset"}
+
+        # Send email in a separate thread (asynchronously)
+        threading.Thread(
+            target=send_booking_mail,
+            kwargs={
+                "client_email": to_email,
+                "booking_details": booking_details,
+                "custom_message": custom_message
+            },
+            daemon=True  # ensures thread won't block exit
+        ).start()

@@ -6,6 +6,8 @@ from django.contrib.auth.models import User
 from django.contrib import admin
 from .models import BlockedTime
 from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.forms import PasswordResetForm
+from .views import send_brevo_email
 
 
 class SignUpForm(UserCreationForm):
@@ -138,3 +140,4 @@ class SMSOptInForm(forms.ModelForm):
         labels = {
             'sms_opt_in': 'I want to receive SMS notifications about my lessons',
         }
+

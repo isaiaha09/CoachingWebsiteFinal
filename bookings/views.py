@@ -19,6 +19,7 @@ import requests
 from django.contrib import messages
 from twilio.rest import Client as TwilioClient
 from django.http import HttpResponse
+from django.contrib.auth.views import PasswordResetView
 
 # ==========================
 # CONTACT FORM
@@ -373,12 +374,14 @@ def forgot_username(request):
             # Send all usernames associated with this email
             usernames = [user.username for user in users]
             username_list = "\n".join(usernames)
-            send_mail(
-                subject="Your Username(s)",
-                message=f"Hello!\n\nThis is the username that is associated with this email:\n{username_list}\n\nLog back in here: {login_url}",
-                from_email=settings.DEFAULT_FROM_EMAIL,
-                recipient_list=[email],
-                fail_silently=False,
+             # Use your Brevo email function
+            send_booking_mail(
+                client_email=email,
+                booking_details={
+                    "first_name": "there",
+                    "subject": "Your Username(s)",
+                },
+                custom_message=f"Hello!\n\nThis is the username(s) associated with this email:\n{username_list}\n\nLog back in here: {login_url}"
             )
             message_sent = True
 
@@ -555,3 +558,30 @@ def send_sms_confirmation(client_obj, message):
         body=message
     )
 
+class CustomPasswordResetView(PasswordResetView):
+    template_name = 'bookings/password_reset.html'
+    success_url = reverse_lazy('password_reset_done')
+    email_template_name = 'bookings/password_reset_email.html'  # unused, just placeholder
+
+    def send_mail(self, subject_template_name, email_template_name,
+                  context, from_email, to_email, html_email_template_name=None):
+        """
+        Override to send via Brevo API.
+        context contains:
+            'user', 'protocol', 'domain', 'token', 'uid'
+        """
+        user = context['user']
+        reset_link = f"{context['protocol']}://{context['domain']}/reset/{context['uid']}/{context['token']}/"
+        custom_message = (
+            f"Hi {user.first_name},\n\n"
+            "You requested a password reset. Click the link below to reset your password:\n\n"
+            f"{reset_link}\n\n"
+            "If you didn't request this, you can safely ignore this email.\n\n"
+            "Thank you!"
+        )
+
+        send_booking_mail(
+            client_email=to_email,
+            booking_details={"first_name": user.first_name, "subject": "Password Reset"},
+            custom_message=custom_message
+        )

@@ -555,7 +555,7 @@ def send_sms_confirmation(client_obj, message):
         body=message
     )
 
-@login_required
+
 def check_users(request):
     """Quick database check to confirm users are loaded on Render."""
     try:

@@ -45,6 +45,7 @@ LOGOUT_REDIRECT_URL = '/'  # or any page you want after logout
 # Application definition
 
 INSTALLED_APPS = [
+   # 'django_q',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -188,4 +189,14 @@ TWILIO_AUTH_TOKEN = os.getenv('TWILIO_AUTH_TOKEN')
 TWILIO_PHONE_NUMBER = os.getenv('TWILIO_PHONE_NUMBER')
 
 
-
+#Q_CLUSTER = {
+ 
+ #   'name': 'cluster44',  # just a name for the cluster
+#  'workers': 2,          # number of worker processes
+ #   'recycle': 500,        # auto-recycle worker after this many tasks
+  #  'timeout': 60,         # max time per task
+   # 'retry': 60,           # retry failed tasks after 60 sec
+   # 'queue_limit': 50,     # max number of tasks in queue at once
+    #'bulk': 10,            # number of tasks to process at once
+  #  'orm': 'default',      # uses your default database (PostgreSQL)
+#}

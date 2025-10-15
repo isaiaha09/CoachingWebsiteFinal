@@ -20,8 +20,6 @@ urlpatterns = [
     path('cancel/<int:booking_id>/', views.cancel_booking, name="cancel_booking"),
     path('login/', CustomLoginView.as_view(), name='login'),
     path('logout/', LogoutView.as_view(next_page='/login/', http_method_names=['get', 'post']), name="logout"),
-    path("check-users/", views.check_users, name="check_users"),
-    path('create-superuser/', create_superuser),
 
 
     # Main Pages

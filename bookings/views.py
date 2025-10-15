@@ -555,30 +555,3 @@ def send_sms_confirmation(client_obj, message):
         body=message
     )
 
-
-def check_users(request):
-    """Quick database check to confirm users are loaded on Render."""
-    try:
-        users = User.objects.all().values('id', 'username', 'email', 'is_staff')
-        user_count = users.count()
-        return JsonResponse({
-            "success": True,
-            "user_count": user_count,
-            "users": list(users[:10]),  # only show first 10
-        })
-    except Exception as e:
-        return JsonResponse({
-            "success": False,
-            "error": str(e),
-        }, status=500)
-    
-def create_superuser(request):
-    if User.objects.filter(is_superuser=True).exists():
-        return JsonResponse({"success": False, "message": "Superuser already exists."})
-
-    # Create superuser with hardcoded username/password
-    superuser = User.objects.create_superuser(
-        username="Isaiah",
-        password="Ilikebigbutts9!"
-    )
-    return JsonResponse({"success": True, "message": "Superuser created."})

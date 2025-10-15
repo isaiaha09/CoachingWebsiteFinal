@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView
 from django.contrib.auth import login
-from django.contrib.auth.forms import AuthenticationForm
+from django.contrib.auth.forms import PasswordResetForm
 from django.http import JsonResponse
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_exempt
@@ -21,6 +21,7 @@ from twilio.rest import Client as TwilioClient
 from django.http import HttpResponse
 from django.contrib.auth.views import PasswordResetView
 import threading
+from django.views.generic import FormView
 
 # ==========================
 # CONTACT FORM
@@ -559,25 +560,20 @@ def send_sms_confirmation(client_obj, message):
         body=message
     )
 
-class CustomPasswordResetView(PasswordResetView):
-    template_name = 'bookings/password_reset.html'
+class CustomPasswordResetView(FormView):
+    template_name = "bookings/password_reset.html"
+    form_class = PasswordResetForm
     success_url = reverse_lazy('password_reset_done')
 
     def form_valid(self, form):
-        """
-        Override form_valid to send the password reset email asynchronously.
-        """
-        # Get the user from the form
-        users = form.get_users(form.cleaned_data['email'])
-        for user in users:
-            # Build the reset link manually
+        # Manually handle sending emails asynchronously
+        for user in form.get_users(form.cleaned_data['email']):
             token = form.token_generator.make_token(user)
             uid = form.get_uid(user)
-            protocol = 'https'  # or 'http' if running locally
+            protocol = 'https'
             domain = self.request.get_host()
             reset_link = f"{protocol}://{domain}/reset/{uid}/{token}/"
 
-            # Build custom message
             custom_message = (
                 f"Hi {user.first_name},\n\n"
                 "You requested a password reset. Click the link below to reset your password:\n\n"
@@ -588,7 +584,6 @@ class CustomPasswordResetView(PasswordResetView):
 
             booking_details = {"first_name": user.first_name, "subject": "Password Reset"}
 
-            # Send email asynchronously using a thread
             threading.Thread(
                 target=send_booking_mail,
                 kwargs={

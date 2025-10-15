@@ -570,7 +570,7 @@ class CustomPasswordResetView(PasswordResetView):
         """
         for user in form.get_users(form.cleaned_data['email']):
             # Generate token and uid
-            token = form.token_generator.make_token(user)
+            token = self.token_generator.make_token(user)
             uid = form.get_uid(user)
             protocol = 'https'  # or 'http' for local testing
             domain = self.request.get_host()

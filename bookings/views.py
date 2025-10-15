@@ -562,21 +562,18 @@ def send_sms_confirmation(client_obj, message):
 
 class CustomPasswordResetView(PasswordResetView):
     template_name = "bookings/registration/password_reset.html"
+    email_template_name = "bookings/registration/password_reset_email.html"
     success_url = reverse_lazy('password_reset_done')
 
     def form_valid(self, form):
-        """
-        Override form_valid to send password reset emails asynchronously.
-        """
         for user in form.get_users(form.cleaned_data['email']):
-            # Generate token and uid
+            # Use PasswordResetView's token_generator and get_uid
             token = self.token_generator.make_token(user)
-            uid = self.get_uid(user)
-            protocol = 'https'  # or 'http' for local testing
+            uid = self.request.resolver_match.func.view_class.get_uid(self, user)  # works in Django 5.2
+            protocol = 'https'
             domain = self.request.get_host()
             reset_link = f"{protocol}://{domain}/reset/{uid}/{token}/"
 
-            # Build custom email message
             custom_message = (
                 f"Hi {user.first_name},\n\n"
                 "You requested a password reset. Click the link below to reset your password:\n\n"
@@ -585,12 +582,8 @@ class CustomPasswordResetView(PasswordResetView):
                 "Thank you!"
             )
 
-            booking_details = {
-                "first_name": user.first_name,
-                "subject": "Password Reset"
-            }
+            booking_details = {"first_name": user.first_name, "subject": "Password Reset"}
 
-            # Send email asynchronously
             threading.Thread(
                 target=send_booking_mail,
                 kwargs={

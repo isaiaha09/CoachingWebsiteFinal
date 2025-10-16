@@ -564,36 +564,26 @@ def send_sms_confirmation(client_obj, message):
     )
 
 class CustomPasswordResetView(PasswordResetView):
-    template_name = "bookings/registration/password_reset.html"
-    success_url = reverse_lazy('password_reset_done')
-    token_generator = default_token_generator
+    template_name = "password_reset.html"
+    email_template_name = "password_reset_email.html"
+    success_url = reverse_lazy("password_reset_done")
 
     def form_valid(self, form):
-        for user in form.get_users(form.cleaned_data['email']):
-            uid = urlsafe_base64_encode(force_bytes(user.pk))
-            token = self.token_generator.make_token(user)
-            
-            protocol = 'https'
-            domain = self.request.get_host()
-            reset_link = f"{protocol}://{domain}/reset/{uid}/{token}/"
-
-            # Build custom email message
-            custom_message = (
-                f"Hi {user.first_name},\n\n"
-                f"You requested a password reset. Click the link below to reset your password:\n\n"
-                f"{reset_link}\n\n"
-                "If you didn't request this, you can ignore this email.\n\nThank you!"
-            )
-
-            # Send asynchronously
-            threading.Thread(
-                target=send_booking_mail,
-                kwargs={
-                    "client_email": user.email,
-                    "booking_details": {"first_name": user.first_name, "subject": "Password Reset"},
-                    "custom_message": custom_message
-                },
-                daemon=True
-            ).start()
+        user = form.get_users(form.cleaned_data["email"]).__next__()
+        booking_details = {
+            "first_name": user.first_name,
+            "subject": "Password Reset Request",
+            "date": "",
+            "start_time": "",
+            "end_time": "",
+            "lesson_type": "",
+        }
+        custom_message = f"Hello {user.first_name},\n\nPlease reset your password by clicking the link:\n{self.get_success_url()}"
+        
+        # Send Brevo email asynchronously
+        threading.Thread(
+            target=send_booking_mail,
+            args=(user.email, booking_details, custom_message)
+        ).start()
 
         return super().form_valid(form)

@@ -18,8 +18,12 @@ class BrevoEmailBackend(BaseEmailBackend):
         sent_count = 0
         for message in email_messages:
             try:
-                # Use the email's local part as a placeholder name if no name is provided
-                to_list = [SendSmtpEmailTo(email=addr, name=addr.split('@')[0]) for addr in message.to]
+                to_list = []
+                for addr in message.to:
+                    # Use the recipient name from the message object if available, otherwise fallback to email username
+                    recipient_name = getattr(message, 'recipient_name', None) or addr.split('@')[0]
+                    to_list.append(SendSmtpEmailTo(email=addr, name=recipient_name))
+
                 email = SendSmtpEmail(
                     to=to_list,
                     sender={'email': settings.EMAIL_HOST_USER, 'name': 'Developmental Baseball'},

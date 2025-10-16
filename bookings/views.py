@@ -567,9 +567,10 @@ class CustomPasswordResetView(PasswordResetView):
 
     def form_valid(self, form):
         for user in form.get_users(form.cleaned_data['email']):
-            # Use PasswordResetView's token_generator and get_uid
+            # Use PasswordResetView's instance methods
+            uid = self.get_uid(user)
             token = self.token_generator.make_token(user)
-            uid = self.request.resolver_match.func.view_class.get_uid(self, user)  # works in Django 5.2
+
             protocol = 'https'
             domain = self.request.get_host()
             reset_link = f"{protocol}://{domain}/reset/{uid}/{token}/"
@@ -584,6 +585,7 @@ class CustomPasswordResetView(PasswordResetView):
 
             booking_details = {"first_name": user.first_name, "subject": "Password Reset"}
 
+            # Send email asynchronously
             threading.Thread(
                 target=send_booking_mail,
                 kwargs={

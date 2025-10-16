@@ -563,21 +563,20 @@ def send_sms_confirmation(client_obj, message):
 class CustomPasswordResetView(PasswordResetView):
     template_name = "bookings/registration/password_reset.html"
     email_template_name = "bookings/registration/password_reset_email.html"
+    subject_template_name = "bookings/registration/password_reset_subject.txt"
     success_url = reverse_lazy('password_reset_done')
 
     def form_valid(self, form):
-        # Use a thread to send the email asynchronously
         threading.Thread(
             target=form.save,
             kwargs={
                 'request': self.request,
                 'use_https': True,
                 'email_template_name': self.email_template_name,
+                'subject_template_name': self.subject_template_name,
                 'from_email': None,
-                'subject_template_name': None,
                 'extra_email_context': None,
             },
             daemon=True
         ).start()
-
         return super().form_valid(form)

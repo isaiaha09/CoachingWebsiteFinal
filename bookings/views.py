@@ -93,7 +93,7 @@ def client_menu(request):
 # ==========================
 # BOOK LESSON
 # ==========================
-@login_required
+login_required
 @never_cache
 def book_lesson(request):
     initial_data = {}
@@ -142,6 +142,62 @@ def book_lesson(request):
                 send_booking_mail(booking.client.email, booking_details)
             except Exception as e:
                 print("Email failed:", e)
+
+            return redirect("my_bookings")
+    else:
+        form = BookingForm(initial=initial_data)
+
+    return render(request, "bookings/booking_form.html", {"form": form})
+
+@login_required
+def book_lesson(request):
+    initial_data = {}
+    date_param = request.GET.get("date")
+    if date_param:
+        try:
+            parsed_datetime = datetime.fromisoformat(date_param)
+            initial_data["date"] = parsed_datetime.date()
+            initial_data["start_time"] = parsed_datetime.time()
+        except ValueError:
+            pass
+
+    if request.method == "POST":
+        form = BookingForm(request.POST, initial=initial_data)
+        if form.is_valid():
+            booking = form.save(commit=False)
+            booking.client = Client.objects.get(user=request.user)
+            booking.save()
+
+            sms_body = (
+                f"Hello {booking.client.first_name}, your lesson has been booked!\n"
+                f"Date: {booking.date.strftime('%b %d, %Y')}\n"
+                f"Time: {booking.start_time.strftime('%I:%M %p')} - "
+                f"{(datetime.combine(booking.date, booking.start_time) + timedelta(minutes=booking.lesson_type.duration)).strftime('%I:%M %p')}\n"
+                f"Lesson Type: {booking.lesson_type.name}\n\n"
+                "Thank you! See you soon!"
+            )
+
+            if booking.client.sms_opt_in and False: # change to True when ready
+                # Send SMS only if client opted in
+                send_sms(booking.client.phone, sms_body, client_obj=booking.client)
+
+            # Build booking_details dict for email
+            end_time_dt = datetime.combine(booking.date, booking.start_time) + timedelta(minutes=booking.lesson_type.duration)
+            booking_details = {
+                "first_name": booking.client.first_name,
+                "last_name": booking.client.last_name,
+                "lesson_type": booking.lesson_type.name,
+                "date": booking.date.strftime("%b %d, %Y"),
+                "start_time": booking.start_time.strftime("%I:%M %p"),
+                "end_time": end_time_dt.strftime("%I:%M %p"),
+            }
+
+            # ✅ Send confirmation email with client_name
+            send_booking_mail(
+                booking.client.email,
+                booking_details,
+                client_name=booking.client.first_name or booking.client.username
+            )
 
             return redirect("my_bookings")
     else:
@@ -249,61 +305,6 @@ def calendar_page(request):
     return render(request, 'bookings/calendar.html', {"blocked_dates": blocked_dates})
 
 
-@login_required
-def book_lesson(request):
-    initial_data = {}
-    date_param = request.GET.get("date")
-    if date_param:
-        try:
-            parsed_datetime = datetime.fromisoformat(date_param)
-            initial_data["date"] = parsed_datetime.date()
-            initial_data["start_time"] = parsed_datetime.time()
-        except ValueError:
-            pass
-
-    if request.method == "POST":
-        form = BookingForm(request.POST, initial=initial_data)
-        if form.is_valid():
-            booking = form.save(commit=False)
-            booking.client = Client.objects.get(user=request.user)
-            booking.save()
-
-            sms_body = (
-                f"Hello {booking.client.first_name}, your lesson has been booked!\n"
-                f"Date: {booking.date.strftime('%b %d, %Y')}\n"
-                f"Time: {booking.start_time.strftime('%I:%M %p')} - "
-                f"{(datetime.combine(booking.date, booking.start_time) + timedelta(minutes=booking.lesson_type.duration)).strftime('%I:%M %p')}\n"
-                f"Lesson Type: {booking.lesson_type.name}\n\n"
-                "Thank you! See you soon!"
-            )
-
-            if booking.client.sms_opt_in and False: # change to True when ready
-                # Send SMS only if client opted in
-                send_sms(booking.client.phone, sms_body, client_obj=booking.client)
-
-            # Build booking_details dict for email
-            end_time_dt = datetime.combine(booking.date, booking.start_time) + timedelta(minutes=booking.lesson_type.duration)
-            booking_details = {
-                "first_name": booking.client.first_name,
-                "last_name": booking.client.last_name,
-                "lesson_type": booking.lesson_type.name,
-                "date": booking.date.strftime("%b %d, %Y"),
-                "start_time": booking.start_time.strftime("%I:%M %p"),
-                "end_time": end_time_dt.strftime("%I:%M %p"),
-            }
-
-            # ✅ Send confirmation email with client_name
-            send_booking_mail(
-                booking.client.email,
-                booking_details,
-                client_name=booking.client.first_name or booking.client.username
-            )
-
-            return redirect("my_bookings")
-    else:
-        form = BookingForm(initial=initial_data)
-
-    return render(request, "bookings/booking_form.html", {"form": form})
 
 @login_required
 def cancel_booking(request, booking_id):
@@ -575,7 +576,7 @@ def send_sms_confirmation(client_obj, message):
         from_=settings.TWILIO_PHONE_NUMBER,  # or messaging_service_sid=settings.TWILIO_MESSAGING_SERVICE_SID
         body=message
     )
-"""""
+
 class CustomPasswordResetView(PasswordResetView):
     template_name = 'bookings/registration/password_reset.html'
     success_url = reverse_lazy('password_reset_done')
@@ -583,7 +584,6 @@ class CustomPasswordResetView(PasswordResetView):
     def send_mail(self, subject_template_name, email_template_name,
                   context, from_email, to_email, html_email_template_name=None):
         
-        Override to send email via Brevo and include recipient 'name'
         
         user = context['user']
         uid = urlsafe_base64_encode(force_bytes(user.pk))
@@ -606,4 +606,3 @@ class CustomPasswordResetView(PasswordResetView):
                 "If you didn’t request this, you can ignore this email."
             )
         )
-"""

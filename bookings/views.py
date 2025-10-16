@@ -573,48 +573,23 @@ class CustomPasswordResetView(PasswordResetView):
 
     def send_mail(self, subject_template_name, email_template_name,
                   context, from_email, to_email, html_email_template_name=None):
+
         user = context['user']
         uid = urlsafe_base64_encode(force_bytes(user.pk))
         token = default_token_generator.make_token(user)
-        # Call the async version
-        send_password_reset_email(user, token, uid)
+        reset_url = f"https://coachalvarez44.com/reset/{uid}/{token}/"
+
+        # ✅ Use your working Brevo function
+        send_booking_mail(
+            client_email=user.email,
+            booking_details={
+                "first_name": user.first_name or user.username,
+                "subject": "Password Reset Request",
+            },
+            custom_message=f"Hi {user.first_name or user.username},\n\n"
+                           f"We received a request to reset your password.\n\n"
+                           f"Click the link below to reset it:\n{reset_url}\n\n"
+                           f"If you didn’t request this, you can ignore this email."
+        )
 
 
-async def send_email_async(payload):
-    url = "https://api.brevo.com/v3/smtp/email"
-    headers = {
-        "api-key": settings.BREVO_API_KEY,
-        "Content-Type": "application/json",
-    }
-    timeout = aiohttp.ClientTimeout(total=10)  # 10 seconds timeout
-
-    async with aiohttp.ClientSession(timeout=timeout) as session:
-        async with session.post(url, json=payload, headers=headers) as resp:
-            resp_text = await resp.text()
-            if resp.status >= 400:
-                raise Exception(f"Brevo API error {resp.status}: {resp_text}")
-            return await resp.json()
-
-
-def send_password_reset_email(user, token, uid):
-    """Dispatch the email in a background thread to avoid blocking Gunicorn."""
-
-    import threading
-
-    def _send():
-        try:
-            reset_url = f"https://coachalvarez44.com/reset/{uid}/{token}/"
-            payload = {
-                "sender": {"name": "Developmental Baseball", "email": "noreply@coachalvarez44.com"},
-                "to": [{"email": user.email}],
-                "subject": "Reset Your Password",
-                "textContent": f"Reset link: {reset_url}",
-            }
-
-            # Run async email send
-            asyncio.run(send_email_async(payload))
-            print(f"Password reset email sent to {user.email}")
-        except Exception as e:
-            print(f"Failed to send password reset email to {user.email}: {e}")
-
-    threading.Thread(target=_send, daemon=True).start()

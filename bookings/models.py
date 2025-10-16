@@ -34,15 +34,14 @@ class BlockedTime(models.Model):
             return f"{self.date} from {self.start_time} to {self.end_time}"
         return f"{self.date} (Full-day block)"
 
-class LessonType(models.Model):
-    DURATION_CHOICES = [
-        (30, '30 Minutes - $30'),
-        (60, '1 Hour - $50'),
-    ]
 
-    name = models.CharField(max_length=50) # e.g. Hitting
-    duration = models.PositiveBigIntegerField(choices=DURATION_CHOICES)
 
+    def get_price(self):
+            price_map = {
+                30: 30,
+                60: 50,
+            }
+            return price_map.get(self.duration, 0)
 
     def __str__(self):
         return f"{self.name} ({self.get_duration_display()} - ${self.get_price()})"
@@ -62,7 +61,7 @@ class Client(models.Model):
 
 class Booking(models.Model):
     client = models.ForeignKey(Client, on_delete=models.CASCADE, related_name='bookings')
-    lesson_type = models.ForeignKey(LessonType, on_delete=models.PROTECT, default=1)
+    lesson_type = models.ForeignKey(on_delete=models.PROTECT, default=1)
     date = models.DateField()
     start_time = models.TimeField()
     additional_notes = models.TextField(blank=True)

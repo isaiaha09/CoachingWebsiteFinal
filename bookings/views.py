@@ -566,34 +566,18 @@ class CustomPasswordResetView(PasswordResetView):
     success_url = reverse_lazy('password_reset_done')
 
     def form_valid(self, form):
-        for user in form.get_users(form.cleaned_data['email']):
-            # Use PasswordResetView's instance methods
-            uid = self.get_uid(user)
-            token = self.token_generator.make_token(user)
-
-            protocol = 'https'
-            domain = self.request.get_host()
-            reset_link = f"{protocol}://{domain}/reset/{uid}/{token}/"
-
-            custom_message = (
-                f"Hi {user.first_name},\n\n"
-                "You requested a password reset. Click the link below to reset your password:\n\n"
-                f"{reset_link}\n\n"
-                "If you didn't request this, you can safely ignore this email.\n\n"
-                "Thank you!"
-            )
-
-            booking_details = {"first_name": user.first_name, "subject": "Password Reset"}
-
-            # Send email asynchronously
-            threading.Thread(
-                target=send_booking_mail,
-                kwargs={
-                    "client_email": user.email,
-                    "booking_details": booking_details,
-                    "custom_message": custom_message
-                },
-                daemon=True
-            ).start()
+        # Use a thread to send the email asynchronously
+        threading.Thread(
+            target=form.save,
+            kwargs={
+                'request': self.request,
+                'use_https': True,
+                'email_template_name': self.email_template_name,
+                'from_email': None,
+                'subject_template_name': None,
+                'extra_email_context': None,
+            },
+            daemon=True
+        ).start()
 
         return super().form_valid(form)

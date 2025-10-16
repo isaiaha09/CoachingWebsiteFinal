@@ -292,8 +292,12 @@ def book_lesson(request):
                 "end_time": end_time_dt.strftime("%I:%M %p"),
             }
 
-            # Send confirmation email only
-            send_booking_mail(booking.client.email, booking_details)
+            # ✅ Send confirmation email with client_name
+            send_booking_mail(
+                booking.client.email,
+                booking_details,
+                client_name=booking.client.first_name or booking.client.username
+            )
 
             return redirect("my_bookings")
     else:
@@ -402,49 +406,36 @@ def forgot_username(request):
 # SEND BOOKING EMAIL (Optional)
 # ==========================
 
-def send_booking_mail(client_email, booking_details=None, client_name=None, custom_message=None):
+def send_booking_mail(client_email, booking_details=None, custom_message=None, client_name=None):
     """
-    Use directly in PasswordResetView or booking emails.
+    Send email via Brevo. client_name is required for recipient name.
     """
-    if not client_name:
-        # Fallback if no name provided
-        client_name = booking_details.get('first_name', 'there') if booking_details else 'there'
+    if client_name is None:
+        client_name = booking_details.get("first_name") if booking_details else client_email.split("@")[0]
 
     message_text = custom_message or f"""
-Hello {client_name},
+Hello {booking_details['first_name'] if booking_details else client_name},
 
 Your lesson has been booked!
-
-Date: {booking_details.get('date', '')}
-Time: {booking_details.get('start_time', '')} - {booking_details.get('end_time', '')}
-Lesson Type: {booking_details.get('lesson_type', '')}
-
-Thank you! See you soon!
 """
-
     payload = {
         "sender": {"name": "Developmental Baseball", "email": "noreply@coachalvarez44.com"},
         "to": [{"email": client_email, "name": client_name}],  # ✅ include name here
-        "subject": booking_details.get('subject') if booking_details else "Booking Confirmation",
+        "subject": booking_details.get("subject", "Booking Confirmation") if booking_details else "No Subject",
         "textContent": message_text
     }
 
-    try:
-        response = requests.post(
-            "https://api.brevo.com/v3/smtp/email",
-            json=payload,
-            headers={"api-key": settings.BREVO_API_KEY, "Content-Type": "application/json"},
-            timeout=10
-        )
-        response.raise_for_status()
-        print(f"Email sent to {client_email}")
-        return response.json()
-    except Exception as e:
-        print(f"Failed to send email: {e}")
-        # print full response if available
-        if hasattr(e, 'response') and e.response is not None:
-            print(e.response.text)
-        raise
+    import requests
+    from django.conf import settings
+
+    response = requests.post(
+        "https://api.brevo.com/v3/smtp/email",
+        json=payload,
+        headers={"api-key": settings.BREVO_API_KEY, "Content-Type": "application/json"},
+        timeout=10
+    )
+    response.raise_for_status()
+    return response.json()
 
 
 def send_24hr_booking_reminder(booking):
@@ -603,16 +594,16 @@ class CustomPasswordResetView(PasswordResetView):
 
         # Send via your Brevo function
         send_booking_mail(
-            client_email=user.email,
-            client_name=user.first_name or user.username,  # ✅ add this
-            booking_details={
-                "first_name": user.first_name or user.username,
-                "subject": "Password Reset Request",
-            },
-            custom_message=(
-                f"Hi {user.first_name or user.username},\n\n"
-                "We received a request to reset your password.\n\n"
-                f"Click the link below to reset it:\n{reset_url}\n\n"
-                "If you didn’t request this, you can ignore this email."
-            )
+        client_email=user.email,
+        client_name=recipient_name,  # ✅ use it here
+        booking_details={
+            "first_name": recipient_name,
+            "subject": "Password Reset Request",
+        },
+        custom_message=(
+            f"Hi {recipient_name},\n\n"
+            "We received a request to reset your password.\n\n"
+            f"Click the link below to reset it:\n{reset_url}\n\n"
+            "If you didn’t request this, you can ignore this email."
         )
+    )

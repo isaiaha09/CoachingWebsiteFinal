@@ -398,15 +398,19 @@ Your lesson has been booked!
     import requests
     from django.conf import settings
 
-    response = requests.post(
-        "https://api.brevo.com/v3/smtp/email",
-        json=payload,
-        headers={"api-key": settings.BREVO_API_KEY, "Content-Type": "application/json"},
-        timeout=10
-    )
-    response.raise_for_status()
-    return response.json()
-
+    try:
+        response = requests.post(
+            "https://api.brevo.com/v3/smtp/email",
+            json=payload,
+            headers={"api-key": settings.BREVO_API_KEY, "Content-Type": "application/json"},
+            timeout=10
+        )
+        response.raise_for_status()
+        print(f"Email sent successfully to {client_email}")  # ✅ log success
+        return response.json()
+    except Exception as e:
+        print(f"Failed to send email to {client_email}: {e}")  # ✅ log error
+        return None
 
 def send_24hr_booking_reminder(booking):
     import requests
@@ -555,6 +559,7 @@ class CustomPasswordResetView(PasswordResetView):
         
         
         user = context['user']
+        print(f"Sending password reset email to: {user.email}")
         uid = urlsafe_base64_encode(force_bytes(user.pk))
         token = default_token_generator.make_token(user)
         reset_url = f"https://coachalvarez44.com/reset/{uid}/{token}/"

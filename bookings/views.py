@@ -573,25 +573,28 @@ class CustomPasswordResetView(PasswordResetView):
 
     def send_mail(self, subject_template_name, email_template_name,
                   context, from_email, to_email, html_email_template_name=None):
-
+        """
+        Override to send email via Brevo and include recipient 'name'
+        """
         user = context['user']
         uid = urlsafe_base64_encode(force_bytes(user.pk))
         token = default_token_generator.make_token(user)
         reset_url = f"https://coachalvarez44.com/reset/{uid}/{token}/"
 
-        # ✅ Use your working Brevo function
-        try:
-            send_booking_mail(
-                client_email=user.email,
-                booking_details={
-                    "first_name": user.first_name or user.username,
-                    "subject": "Password Reset Request",
-                },
-                custom_message=f"Hi {user.first_name or user.username},\n\n"
-                               f"We received a request to reset your password.\n\n"
-                               f"Click the link below to reset it:\n{reset_url}\n\n"
-                               f"If you didn’t request this, you can ignore this email."
+        recipient_name = user.first_name or user.username
+
+        # Send via your Brevo function
+        send_booking_mail(
+            client_email=user.email,
+            client_name=recipient_name,  # ✅ required by Brevo
+            booking_details={
+                "first_name": recipient_name,
+                "subject": "Password Reset Request",
+            },
+            custom_message=(
+                f"Hi {recipient_name},\n\n"
+                "We received a request to reset your password.\n\n"
+                f"Click the link below to reset it:\n{reset_url}\n\n"
+                "If you didn’t request this, you can ignore this email."
             )
-            print(f"Email sent to {user.email}")  # <-- confirmation in logs
-        except Exception as e:
-            print(f"Failed to send email to {user.email}: {e}")  # <-- log actual error
+        )

@@ -27,6 +27,7 @@ from django.contrib.auth.tokens import default_token_generator
 from django.utils.encoding import force_bytes
 import asyncio
 import aiohttp
+from .email_backends import send_booking_mail  # Import the function here
 
 
 

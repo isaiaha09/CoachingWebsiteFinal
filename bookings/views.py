@@ -22,6 +22,9 @@ from django.http import HttpResponse
 from django.contrib.auth.views import PasswordResetView
 import threading
 from django.views.generic import FormView
+from django.utils.http import urlsafe_base64_encode
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.encoding import force_bytes
 
 # ==========================
 # CONTACT FORM
@@ -562,21 +565,35 @@ def send_sms_confirmation(client_obj, message):
 
 class CustomPasswordResetView(PasswordResetView):
     template_name = "bookings/registration/password_reset.html"
-    email_template_name = "bookings/registration/password_reset_email.html"
-    subject_template_name = "bookings/registration/password_reset_subject.txt"
     success_url = reverse_lazy('password_reset_done')
+    token_generator = default_token_generator
 
     def form_valid(self, form):
-        threading.Thread(
-            target=form.save,
-            kwargs={
-                'request': self.request,
-                'use_https': True,
-                'email_template_name': self.email_template_name,
-                'subject_template_name': self.subject_template_name,
-                'from_email': None,
-                'extra_email_context': None,
-            },
-            daemon=True
-        ).start()
+        for user in form.get_users(form.cleaned_data['email']):
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            token = self.token_generator.make_token(user)
+            
+            protocol = 'https'
+            domain = self.request.get_host()
+            reset_link = f"{protocol}://{domain}/reset/{uid}/{token}/"
+
+            # Build custom email message
+            custom_message = (
+                f"Hi {user.first_name},\n\n"
+                f"You requested a password reset. Click the link below to reset your password:\n\n"
+                f"{reset_link}\n\n"
+                "If you didn't request this, you can ignore this email.\n\nThank you!"
+            )
+
+            # Send asynchronously
+            threading.Thread(
+                target=send_booking_mail,
+                kwargs={
+                    "client_email": user.email,
+                    "booking_details": {"first_name": user.first_name, "subject": "Password Reset"},
+                    "custom_message": custom_message
+                },
+                daemon=True
+            ).start()
+
         return super().form_valid(form)

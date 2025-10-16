@@ -93,7 +93,7 @@ def client_menu(request):
 # ==========================
 # BOOK LESSON
 # ==========================
-login_required
+@login_required
 @never_cache
 def book_lesson(request):
     initial_data = {}
@@ -112,64 +112,28 @@ def book_lesson(request):
             booking_date = form.cleaned_data['date']
             today = date.today()
 
-            # Calculate current and next month limits
+            # Booking range logic
             end_of_current_month = (today.replace(day=1) + timedelta(days=32)).replace(day=1) - timedelta(days=1)
             seven_days_before_end = end_of_current_month - timedelta(days=7)
             next_month_start = (today.replace(day=1) + timedelta(days=32)).replace(day=1)
             end_of_next_month = (next_month_start.replace(day=1) + timedelta(days=32)).replace(day=1) - timedelta(days=1)
 
-            # Enforce booking range
             if not ((today <= booking_date <= end_of_current_month) or
                     (today >= seven_days_before_end and next_month_start <= booking_date <= end_of_next_month)):
-                form.add_error('date', "You can only book within the current month, or next month starting 7 days before the month ends.")
+                form.add_error(
+                    'date',
+                    "You can only book within the current month, or next month starting 7 days before the month ends."
+                )
                 return render(request, "bookings/booking_form.html", {"form": form})
 
+            # Save booking
             booking = form.save(commit=False)
             booking.client = Client.objects.get(user=request.user)
             booking.save()
 
-            # ⬇️ Send the booking email here
-            booking_details = {
-                "first_name": booking.client.first_name,
-                "date": booking.date.strftime("%Y-%m-%d"),
-                "start_time": booking.start_time.strftime("%I:%M %p"),
-                "end_time": (datetime.combine(booking.date, booking.start_time)
-                             + timedelta(minutes=booking.lesson_type.duration)
-                            ).strftime("%I:%M %p"),
-                "lesson_type": booking.lesson_type.name,
-            }
-            try:
-                send_booking_mail(booking.client.email, booking_details)
-            except Exception as e:
-                print("Email failed:", e)
-
-            return redirect("my_bookings")
-    else:
-        form = BookingForm(initial=initial_data)
-
-    return render(request, "bookings/booking_form.html", {"form": form})
-
-@login_required
-def book_lesson(request):
-    initial_data = {}
-    date_param = request.GET.get("date")
-    if date_param:
-        try:
-            parsed_datetime = datetime.fromisoformat(date_param)
-            initial_data["date"] = parsed_datetime.date()
-            initial_data["start_time"] = parsed_datetime.time()
-        except ValueError:
-            pass
-
-    if request.method == "POST":
-        form = BookingForm(request.POST, initial=initial_data)
-        if form.is_valid():
-            booking = form.save(commit=False)
-            booking.client = Client.objects.get(user=request.user)
-            booking.save()
-
+            # Build SMS body
             sms_body = (
-                f"Hello {booking.client.first_name}, your lesson has been booked!\n"
+                f"{booking.client.first_name}, your lesson has been booked!\n"
                 f"Date: {booking.date.strftime('%b %d, %Y')}\n"
                 f"Time: {booking.start_time.strftime('%I:%M %p')} - "
                 f"{(datetime.combine(booking.date, booking.start_time) + timedelta(minutes=booking.lesson_type.duration)).strftime('%I:%M %p')}\n"
@@ -177,8 +141,8 @@ def book_lesson(request):
                 "Thank you! See you soon!"
             )
 
-            if booking.client.sms_opt_in and False: # change to True when ready
-                # Send SMS only if client opted in
+            # Send SMS if opted in
+            if booking.client.sms_opt_in:
                 send_sms(booking.client.phone, sms_body, client_obj=booking.client)
 
             # Build booking_details dict for email
@@ -192,7 +156,7 @@ def book_lesson(request):
                 "end_time": end_time_dt.strftime("%I:%M %p"),
             }
 
-            # ✅ Send confirmation email with client_name
+            # Send booking confirmation email
             send_booking_mail(
                 booking.client.email,
                 booking_details,
@@ -204,7 +168,6 @@ def book_lesson(request):
         form = BookingForm(initial=initial_data)
 
     return render(request, "bookings/booking_form.html", {"form": form})
-
 
 # ==========================
 # MY BOOKINGS

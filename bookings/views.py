@@ -564,26 +564,31 @@ def send_sms_confirmation(client_obj, message):
     )
 
 class CustomPasswordResetView(PasswordResetView):
-    template_name = "bookings/registration/password_reset.html"
-    email_template_name = "bookings/registration/password_reset_email.html"
-    subject_template_name = "bookings/registration/password_reset_subject.txt"
+    template_name = 'bookings/registration/password_reset.html'
+    success_url = reverse_lazy('password_reset_done')
 
-    def form_valid(self, form):
-        user = form.get_users(form.cleaned_data["email"]).__next__()
-        booking_details = {
-            "first_name": user.first_name,
-            "subject": "Password Reset Request",
-            "date": "",
-            "start_time": "",
-            "end_time": "",
-            "lesson_type": "",
-        }
-        custom_message = f"Hello {user.first_name},\n\nPlease reset your password by clicking the link:\n{self.get_success_url()}"
-        
-        # Send Brevo email asynchronously
-        threading.Thread(
-            target=send_booking_mail,
-            args=(user.email, booking_details, custom_message)
-        ).start()
+    # override this method to use Brevo
+    def send_mail(self, subject_template_name, email_template_name,
+                  context, from_email, to_email, html_email_template_name=None):
+        # Django normally uses context['user'], context['token'], context['uid']
+        user = context['user']
+        token = context['token']
+        uid = context['uid']
+        send_password_reset_email(user, token, uid)
 
-        return super().form_valid(form)
+
+def send_password_reset_email(user, token, uid):
+    reset_url = f"https://coachalvarez44.com/reset/{uid}/{token}/"
+    payload = {
+        "sender": {"name": "Developmental Baseball", "email": "noreply@coachalvarez44.com"},
+        "to": [{"email": user.email}],
+        "subject": "Reset Your Password",
+        "textContent": f"Hello {user.first_name},\n\nReset your password here: {reset_url}\n\nThanks!"
+    }
+    response = requests.post(
+        "https://api.brevo.com/v3/smtp/email",
+        json=payload,
+        headers={"api-key": settings.BREVO_API_KEY, "Content-Type": "application/json"},
+        timeout=10
+    )
+    response.raise_for_status()

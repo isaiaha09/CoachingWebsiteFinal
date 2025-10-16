@@ -402,32 +402,49 @@ def forgot_username(request):
 # SEND BOOKING EMAIL (Optional)
 # ==========================
 
-def send_booking_mail(client_email, booking_details, custom_message=None):
+def send_booking_mail(client_email, booking_details=None, client_name=None, custom_message=None):
+    """
+    Use directly in PasswordResetView or booking emails.
+    """
+    if not client_name:
+        # Fallback if no name provided
+        client_name = booking_details.get('first_name', 'there') if booking_details else 'there'
+
     message_text = custom_message or f"""
-Hello {booking_details['first_name']},
+Hello {client_name},
 
 Your lesson has been booked!
 
-Date: {booking_details['date']}
-Time: {booking_details['start_time']} - {booking_details['end_time']}
-Lesson Type: {booking_details['lesson_type']}
+Date: {booking_details.get('date', '')}
+Time: {booking_details.get('start_time', '')} - {booking_details.get('end_time', '')}
+Lesson Type: {booking_details.get('lesson_type', '')}
 
 Thank you! See you soon!
 """
+
     payload = {
         "sender": {"name": "Developmental Baseball", "email": "noreply@coachalvarez44.com"},
-        "to": [{"email": client_email}],
-        "subject": f"{booking_details.get('subject', 'Booking Confirmation')}",
+        "to": [{"email": client_email, "name": client_name}],  # ✅ include name here
+        "subject": booking_details.get('subject') if booking_details else "Booking Confirmation",
         "textContent": message_text
     }
-    response = requests.post(
-        "https://api.brevo.com/v3/smtp/email",
-        json=payload,
-        headers={"api-key": settings.BREVO_API_KEY, "Content-Type": "application/json"},
-        timeout=10
-    )
-    response.raise_for_status()
-    return response.json()
+
+    try:
+        response = requests.post(
+            "https://api.brevo.com/v3/smtp/email",
+            json=payload,
+            headers={"api-key": settings.BREVO_API_KEY, "Content-Type": "application/json"},
+            timeout=10
+        )
+        response.raise_for_status()
+        print(f"Email sent to {client_email}")
+        return response.json()
+    except Exception as e:
+        print(f"Failed to send email: {e}")
+        # print full response if available
+        if hasattr(e, 'response') and e.response is not None:
+            print(e.response.text)
+        raise
 
 
 def send_24hr_booking_reminder(booking):

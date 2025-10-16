@@ -156,11 +156,17 @@ def book_lesson(request):
                 "end_time": end_time_dt.strftime("%I:%M %p"),
             }
 
-            # Send booking confirmation email
+            custom_message = (
+                f"{booking.client.first_name},\n\n"
+                f"Your lesson has been booked for {booking.date.strftime('%b %d, %Y')} at "
+                f"{booking.start_time.strftime('%I:%M %p')} for {booking.lesson_type.name}.\n\n"
+                "Thank you! See you soon!"
+            )
             send_booking_mail(
                 booking.client.email,
                 booking_details,
-                client_name=booking.client.first_name or booking.client.username
+                client_name=booking.client.first_name or booking.client.username,
+                custom_message=custom_message
             )
 
             return redirect("my_bookings")

@@ -168,7 +168,7 @@ if os.environ.get("RUNNING_LOCALLY") == "1":
     EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 else:
     # Live: send real emails via Brevo SMTP
-    EMAIL_BACKEND = 'bookings.email_backends.BrevoEmailBackend'
+    EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
     EMAIL_HOST = 'smtp-relay.brevo.com'
     EMAIL_PORT = 587
     EMAIL_USE_TLS = True

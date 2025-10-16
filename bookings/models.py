@@ -40,12 +40,14 @@ class LessonType(models.Model):
         (60, '1 Hour'),
     ]
 
-    name = models.CharField(max_length=50)  # e.g., Hitting
+    name = models.CharField(max_length=50)
     duration = models.PositiveBigIntegerField(choices=DURATION_CHOICES)
-    price = models.PositiveIntegerField()  # store price directly
+
+    def get_price(self):
+        return {30: 30, 60: 50}.get(self.duration, 0)
 
     def __str__(self):
-        return f"{self.name} ({self.get_duration_display()} - ${self.price})"
+        return f"{self.name} ({self.get_duration_display()} - ${self.get_price()})"
 
 class Client(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, null=True, blank=True)
@@ -71,8 +73,7 @@ class Booking(models.Model):
         ordering = ['date', 'start_time']
         constraints = [
             models.UniqueConstraint(fields=['client','date', 'start_time'], 
-            name='unique_booking_per_client_start'
-            )
+            name='unique_booking_per_client_start')
         ]
 
     def __str__(self):

@@ -33,7 +33,7 @@ urlpatterns = [
 
     # Password reset views with app namespace
     path('password_reset/',
-    CustomPasswordResetView.as_view(),
+        CustomPasswordResetView.as_view(),
     name='password_reset'),
 
     path('password_reset/done/',

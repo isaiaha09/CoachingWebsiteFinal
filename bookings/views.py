@@ -26,6 +26,7 @@ from django.utils.http import urlsafe_base64_encode
 from django.contrib.auth.tokens import default_token_generator
 from django.utils.encoding import force_bytes
 
+
 # ==========================
 # CONTACT FORM
 # ==========================
@@ -568,26 +569,29 @@ class CustomPasswordResetView(PasswordResetView):
     success_url = reverse_lazy('password_reset_done')
 
     def send_mail(self, subject_template_name, email_template_name,
-                  context, from_email, to_email, html_email_template_name=None):
+              context, from_email, to_email, html_email_template_name=None):
         user = context['user']
-        # Generate uid and token here
         uid = urlsafe_base64_encode(force_bytes(user.pk))
         token = default_token_generator.make_token(user)
         send_password_reset_email(user, token, uid)
 
 
 def send_password_reset_email(user, token, uid):
+    print(f"send_password_reset_email called for {user.email}")
     reset_url = f"https://coachalvarez44.com/reset/{uid}/{token}/"
     payload = {
         "sender": {"name": "Developmental Baseball", "email": "noreply@coachalvarez44.com"},
         "to": [{"email": user.email}],
         "subject": "Reset Your Password",
-        "textContent": f"Hello {user.first_name},\n\nReset your password here: {reset_url}\n\nThanks!"
+        "textContent": f"Reset link: {reset_url}",
     }
+    # Skip actual requests for testing
+    # response = requests.post(...)
     response = requests.post(
         "https://api.brevo.com/v3/smtp/email",
         json=payload,
         headers={"api-key": settings.BREVO_API_KEY, "Content-Type": "application/json"},
-        timeout=10
+        timeout=10,
     )
+    print("Brevo response:", response.status_code, response.text)
     response.raise_for_status()

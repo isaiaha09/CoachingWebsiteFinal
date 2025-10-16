@@ -46,6 +46,7 @@ LOGOUT_REDIRECT_URL = '/'  # or any page you want after logout
 
 INSTALLED_APPS = [
    # 'django_q',
+    'django_extensions',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

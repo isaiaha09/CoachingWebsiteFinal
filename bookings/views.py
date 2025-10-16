@@ -567,13 +567,12 @@ class CustomPasswordResetView(PasswordResetView):
     template_name = 'bookings/registration/password_reset.html'
     success_url = reverse_lazy('password_reset_done')
 
-    # override this method to use Brevo
     def send_mail(self, subject_template_name, email_template_name,
                   context, from_email, to_email, html_email_template_name=None):
-        # Django normally uses context['user'], context['token'], context['uid']
         user = context['user']
-        token = context['token']
-        uid = context['uid']
+        # Generate uid and token here
+        uid = urlsafe_base64_encode(force_bytes(user.pk))
+        token = default_token_generator.make_token(user)
         send_password_reset_email(user, token, uid)
 
 

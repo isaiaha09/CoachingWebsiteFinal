@@ -580,16 +580,18 @@ class CustomPasswordResetView(PasswordResetView):
         reset_url = f"https://coachalvarez44.com/reset/{uid}/{token}/"
 
         # ✅ Use your working Brevo function
-        send_booking_mail(
-            client_email=user.email,
-            booking_details={
-                "first_name": user.first_name or user.username,
-                "subject": "Password Reset Request",
-            },
-            custom_message=f"Hi {user.first_name or user.username},\n\n"
-                           f"We received a request to reset your password.\n\n"
-                           f"Click the link below to reset it:\n{reset_url}\n\n"
-                           f"If you didn’t request this, you can ignore this email."
-        )
-
-
+        try:
+            send_booking_mail(
+                client_email=user.email,
+                booking_details={
+                    "first_name": user.first_name or user.username,
+                    "subject": "Password Reset Request",
+                },
+                custom_message=f"Hi {user.first_name or user.username},\n\n"
+                               f"We received a request to reset your password.\n\n"
+                               f"Click the link below to reset it:\n{reset_url}\n\n"
+                               f"If you didn’t request this, you can ignore this email."
+            )
+            print(f"Email sent to {user.email}")  # <-- confirmation in logs
+        except Exception as e:
+            print(f"Failed to send email to {user.email}: {e}")  # <-- log actual error

@@ -586,13 +586,13 @@ class CustomPasswordResetView(PasswordResetView):
         # Send via your Brevo function
         send_booking_mail(
             client_email=user.email,
-            client_name=recipient_name,  # ✅ required by Brevo
+            client_name=user.first_name or user.username,  # ✅ add this
             booking_details={
-                "first_name": recipient_name,
+                "first_name": user.first_name or user.username,
                 "subject": "Password Reset Request",
             },
             custom_message=(
-                f"Hi {recipient_name},\n\n"
+                f"Hi {user.first_name or user.username},\n\n"
                 "We received a request to reset your password.\n\n"
                 f"Click the link below to reset it:\n{reset_url}\n\n"
                 "If you didn’t request this, you can ignore this email."

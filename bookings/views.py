@@ -564,9 +564,9 @@ def send_sms_confirmation(client_obj, message):
     )
 
 class CustomPasswordResetView(PasswordResetView):
-    template_name = "password_reset.html"
-    email_template_name = "password_reset_email.html"
-    success_url = reverse_lazy("password_reset_done")
+    template_name = "bookings/registration/password_reset.html"
+    email_template_name = "bookings/registration/password_reset_email.html"
+    subject_template_name = "bookings/registration/password_reset_subject.txt"
 
     def form_valid(self, form):
         user = form.get_users(form.cleaned_data["email"]).__next__()

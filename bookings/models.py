@@ -43,12 +43,6 @@ class LessonType(models.Model):
     name = models.CharField(max_length=50) # e.g. Hitting
     duration = models.PositiveBigIntegerField(choices=DURATION_CHOICES)
 
-    def get_price(self):
-            price_map = {
-                30: 30,
-                60: 50,
-            }
-            return price_map.get(self.duration, 0)
 
     def __str__(self):
         return f"{self.name} ({self.get_duration_display()} - ${self.get_price()})"

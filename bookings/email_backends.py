@@ -4,6 +4,7 @@ from django.conf import settings
 from sib_api_v3_sdk import ApiClient, Configuration
 from sib_api_v3_sdk.api import transactional_emails_api
 from sib_api_v3_sdk.models import SendSmtpEmail, SendSmtpEmailTo
+import logging
 
 class BrevoEmailBackend(BaseEmailBackend):
     """Optional: Django email backend for general emails."""
@@ -37,10 +38,11 @@ class BrevoEmailBackend(BaseEmailBackend):
                     print(f"Failed to send email: {e}")
                 return sent_count
 
-# ✅ Add this function below the class
+logger = logging.getLogger(__name__)
+
 def send_booking_mail(client_email, client_name, booking_details=None, custom_message=None):
     """
-    Use directly in PasswordResetView.
+    Send email via Brevo. client_name is required for recipient name.
     """
     configuration = Configuration()
     configuration.api_key['api-key'] = settings.BREVO_API_KEY
@@ -51,11 +53,16 @@ def send_booking_mail(client_email, client_name, booking_details=None, custom_me
         to=to_list,
         sender={'email': settings.EMAIL_HOST_USER, 'name': 'Developmental Baseball'},
         subject=booking_details.get('subject') if booking_details else "No Subject",
-        html_content=custom_message or ""
+        html_content=custom_message or (
+            f"Hello {client_name},\n\n"
+            "Your lesson has been booked!"
+        )
     )
 
     try:
-        api_instance.send_transac_email(email)
-        print(f"Email sent to {client_email}")
+        response = api_instance.send_transac_email(email)
+        logger.info(f"Email sent to {client_email}, Brevo response: {response}")
     except Exception as e:
-        print(f"Failed to send email: {e}")
+        logger.error(f"Failed to send email to {client_email}: {e}", exc_info=True)
+        # Re-raise so Django logs it
+        raise

@@ -590,20 +590,19 @@ class CustomPasswordResetView(PasswordResetView):
         token = default_token_generator.make_token(user)
         reset_url = f"https://coachalvarez44.com/reset/{uid}/{token}/"
 
-        recipient_name = user.first_name or user.username
 
         # Send via your Brevo function
         send_booking_mail(
-        client_email=user.email,
-        client_name=recipient_name,  # ✅ use it here
-        booking_details={
-            "first_name": recipient_name,
-            "subject": "Password Reset Request",
-        },
-        custom_message=(
-            f"Hi {recipient_name},\n\n"
-            "We received a request to reset your password.\n\n"
-            f"Click the link below to reset it:\n{reset_url}\n\n"
-            "If you didn’t request this, you can ignore this email."
+            client_email=user.email,
+            client_name=user.first_name or user.username,
+            booking_details={
+                "first_name": user.first_name or user.username,
+                "subject": "Password Reset Request",
+            },
+            custom_message=(
+                f"Hi {user.first_name or user.username},\n\n"
+                "We received a request to reset your password.\n\n"
+                f"Click the link below to reset it:\n{reset_url}\n\n"
+                "If you didn’t request this, you can ignore this email."
+            )
         )
-    )

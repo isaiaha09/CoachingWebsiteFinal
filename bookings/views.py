@@ -575,16 +575,16 @@ def send_sms_confirmation(client_obj, message):
         from_=settings.TWILIO_PHONE_NUMBER,  # or messaging_service_sid=settings.TWILIO_MESSAGING_SERVICE_SID
         body=message
     )
-
+"""""
 class CustomPasswordResetView(PasswordResetView):
     template_name = 'bookings/registration/password_reset.html'
     success_url = reverse_lazy('password_reset_done')
 
     def send_mail(self, subject_template_name, email_template_name,
                   context, from_email, to_email, html_email_template_name=None):
-        """
+        
         Override to send email via Brevo and include recipient 'name'
-        """
+        
         user = context['user']
         uid = urlsafe_base64_encode(force_bytes(user.pk))
         token = default_token_generator.make_token(user)
@@ -606,3 +606,4 @@ class CustomPasswordResetView(PasswordResetView):
                 "If you didn’t request this, you can ignore this email."
             )
         )
+"""

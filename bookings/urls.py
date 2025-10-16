@@ -32,9 +32,15 @@ urlpatterns = [
 
 
     # Password reset views with app namespace
-    path('password_reset/',
-        CustomPasswordResetView.as_view(),
-    name='password_reset'),
+    path(
+        'password_reset/',
+        auth_views.PasswordResetView.as_view(
+            template_name='bookings/registration/password_reset.html',
+            email_template_name='bookings/registration/password_reset_email.html',
+            success_url='/password_reset/done/'
+        ),
+        name='password_reset'
+    ),
 
     path('password_reset/done/',
          auth_views.PasswordResetDoneView.as_view(

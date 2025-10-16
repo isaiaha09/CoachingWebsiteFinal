@@ -6,6 +6,11 @@ from sib_api_v3_sdk.api import transactional_emails_api
 from sib_api_v3_sdk.models import SendSmtpEmail, SendSmtpEmailTo
 import logging
 
+logger = logging.getLogger(__name__)
+
+# ---------------------------
+# Django Email Backend
+# ---------------------------
 class BrevoEmailBackend(BaseEmailBackend):
     """Optional: Django email backend for general emails."""
     def send_messages(self, email_messages):
@@ -35,11 +40,13 @@ class BrevoEmailBackend(BaseEmailBackend):
                 sent_count += 1
             except Exception as e:
                 if not self.fail_silently:
-                    print(f"Failed to send email: {e}")
-                return sent_count
+                    logger.error(f"Failed to send email to {message.to}: {e}", exc_info=True)
+        return sent_count
 
-logger = logging.getLogger(__name__)
 
+# ---------------------------
+# Helper function for sending booking emails
+# ---------------------------
 def send_booking_mail(client_email, client_name, booking_details=None, custom_message=None):
     """
     Send email via Brevo. client_name is required for recipient name.
@@ -62,7 +69,8 @@ def send_booking_mail(client_email, client_name, booking_details=None, custom_me
     try:
         response = api_instance.send_transac_email(email)
         logger.info(f"Email sent to {client_email}, Brevo response: {response}")
+        return response
     except Exception as e:
         logger.error(f"Failed to send email to {client_email}: {e}", exc_info=True)
-        # Re-raise so Django logs it
+        # Re-raise so Django logs it properly
         raise

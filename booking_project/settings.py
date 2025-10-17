@@ -163,18 +163,18 @@ STATICFILES_IGNORE_PATTERNS = ['*.mov', '*.mp4']
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-if os.environ.get("RUNNING_LOCALLY") == "1":
+#if os.environ.get("RUNNING_LOCALLY") == "1":
     # Local dev: print emails to console
-    EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
-else:
+ #   EMAIL_BACKEND = 'bookings.email_backends.BrevoEmailBackend'
+#else:
     # Live: send real emails via Brevo SMTP
-    EMAIL_BACKEND = 'bookings.email_backends.BrevoEmailBackend'
-    EMAIL_HOST = 'smtp-relay.brevo.com'
-    EMAIL_PORT = 587
-    EMAIL_USE_TLS = True
-    EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
-    EMAIL_HOST_PASSWORD = os.getenv('BREVO_SMTP_KEY')
-    DEFAULT_FROM_EMAIL = 'Developmental Baseball <noreply@coachalvarez44.com>'
+EMAIL_BACKEND = 'bookings.email_backends.BrevoEmailBackend'
+EMAIL_HOST = 'smtp-relay.brevo.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.getenv('BREVO_SMTP_KEY')
+DEFAULT_FROM_EMAIL = 'Developmental Baseball <noreply@coachalvarez44.com>'
 
 BREVO_API_KEY = os.getenv('BREVO_API_KEY')
 EMAIL_RECEIVER = os.getenv('EMAIL_RECEIVER')

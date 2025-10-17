@@ -299,7 +299,8 @@ def cancel_booking(request, booking_id):
             "start_time": booking_time,
             "subject": "Lesson Cancellation Confirmation"
         },
-        custom_message=f"Hi {client_first_name},\n\nYour {lesson_name} lesson scheduled for {booking_date} at {booking_time} has been successfully cancelled.\n\nThank you!"
+        custom_message=f"{client_first_name},\n\nYour {lesson_name} lesson scheduled for {booking_date} at {booking_time} has been successfully cancelled.\n\n"
+        f"If this was an accident, please reschedule a lesson back online. Thank you! I will see you soon!"
     )
 
     messages.success(request, "Your booking has been cancelled. A confirmation email has been sent.")
@@ -363,9 +364,9 @@ def forgot_username(request):
                 client_email=email,
                 booking_details={
                     "first_name": "there",
-                    "subject": "Your Username(s)",
+                    "subject": "Your Username",
                 },
-                custom_message=f"Hello!\n\nThis is the username(s) associated with this email:\n{username_list}\n\nLog back in here: {login_url}"
+                custom_message=f"Hello!\n\nThis is the username that is associated with this email:\n{username_list}\n\n You can log back in here: {login_url}"
             )
             message_sent = True
 
@@ -551,32 +552,37 @@ def send_sms_confirmation(client_obj, message):
     )
 
 class CustomPasswordResetView(PasswordResetView):
-    template_name = 'bookings/registration/password_reset.html'
+    template_name = 'bookings/registration/password_reset.html'  # your page with form
     success_url = reverse_lazy('password_reset_done')
 
-    def send_mail(self, subject_template_name, email_template_name,
-                  context, from_email, to_email, html_email_template_name=None):
-        
-        
-        user = context['user']
-        print(f"Sending password reset email to: {user.email}")
-        uid = urlsafe_base64_encode(force_bytes(user.pk))
-        token = default_token_generator.make_token(user)
-        reset_url = f"https://coachalvarez44.com/reset/{uid}/{token}/"
+    def form_valid(self, form):
+        # Loop over all users with this email
+        for user in form.get_users(form.cleaned_data['email']):
+            # Build password reset link
+            uid = urlsafe_base64_encode(force_bytes(user.pk))
+            token = default_token_generator.make_token(user)
+            reset_url = f"https://coachalvarez44.com/reset/{uid}/{token}/"
 
-
-        # Send via your Brevo function
-        send_booking_mail(
-            client_email=user.email,
-            client_name=user.first_name or user.username,
-            booking_details={
-                "first_name": user.first_name or user.username,
-                "subject": "Password Reset Request",
-            },
-            custom_message=(
+            # Build custom HTML email
+            custom_message = (
                 f"Hi {user.first_name or user.username},\n\n"
-                "We received a request to reset your password.\n\n"
+                "You requested to reset your password.\n\n"
                 f"Click the link below to reset it:\n{reset_url}\n\n"
-                "If you didn’t request this, you can ignore this email."
+                f"Just in case you forgot, your username is '{user.username}'.\n\n"
+                "If you didn’t request this, you can ignore this email.\n\n"
+                "Thanks,\n- Coach"
             )
-        )
+
+            # Send Brevo email only
+            send_booking_mail(
+                client_email=user.email,
+                client_name=user.first_name or user.username,
+                booking_details={
+                    "first_name": user.first_name or user.username,
+                    "subject": "Password Reset Request",
+                },
+                custom_message=custom_message
+            )
+
+        # Skip the default email completely
+        return redirect(self.success_url)

@@ -4,7 +4,7 @@ from .views import CustomLoginView, contact
 from django.contrib.auth.views import LogoutView
 from django.contrib.auth import views as auth_views
 from django.views.generic import TemplateView
-from .views import CustomPasswordResetView
+from bookings.views import CustomPasswordResetView
 
 
 

@@ -203,6 +203,10 @@ def my_bookings(request):
 # ==========================
 @login_required
 def calendar_view(request):
+    from django.utils import timezone
+    today = timezone.localdate()
+    BlockedTime.objects.filter(date__lt=today).delete()
+
     start_param = request.GET.get("start")
     end_param = request.GET.get("end")
 
@@ -269,6 +273,9 @@ def calendar_view(request):
 # ==========================
 @login_required
 def calendar_page(request):
+    from django.utils import timezone
+    today = timezone.localdate()
+    BlockedTime.objects.filter(date__lt=today).delete()  # 🧹 cleanup
     blocked_full_days = BlockedTime.objects.filter(start_time__isnull=True, end_time__isnull=True).values_list('date', flat=True)
     blocked_dates = [d.strftime('%Y-%m-%d') for d in blocked_full_days]
     return render(request, 'bookings/calendar.html', {"blocked_dates": blocked_dates})

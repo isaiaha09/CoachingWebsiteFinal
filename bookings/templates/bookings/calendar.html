@@ -507,17 +507,22 @@
                 validRange: function(nowDate) {
                     const today = new Date();
                     const year = today.getFullYear();
-                    const month = today.getMonth(); // 0-based
-                    const lastDayOfMonth = new Date(year, month + 1, 0); // last day of current month
+                    const month = today.getMonth();
 
-                    // Allow next month only if within 7 days of its start
+                    // Get last day of this month (e.g., Oct 31, Nov 30, etc.)
+                    const lastDayThisMonth = new Date(year, month + 1, 0);
+
+                    // Determine if we allow next month (within 7 days rule)
                     const firstDayNextMonth = new Date(year, month + 1, 1);
-                    const diffDays = Math.ceil((firstDayNextMonth - today) / (1000*60*60*24));
+                    const diffDays = Math.ceil((firstDayNextMonth - today) / (1000 * 60 * 60 * 24));
 
-                    let end = lastDayOfMonth;
+                    // Default: end = 1 day *after* last day of this month
+                    let end = new Date(lastDayThisMonth.getTime() + 24 * 60 * 60 * 1000);
+
                     if (diffDays <= 7) {
+                        // If within 7 days of next month, allow showing all of next month too
                         const lastDayNextMonth = new Date(year, month + 2, 0);
-                        end = lastDayNextMonth;
+                        end = new Date(lastDayNextMonth.getTime() + 24 * 60 * 60 * 1000);
                     }
 
                     return { start: today, end: end };

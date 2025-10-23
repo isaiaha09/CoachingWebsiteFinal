@@ -401,12 +401,9 @@
                     const clickedDate = new Date(info.date);
                     const dateStr = info.dateStr;
 
-                    // Prevent <24h booking
-                    if ((clickedDate - now)/(1000*60*60) < 24) {
-                        alert("You cannot book lessons less than 24 hours in advance.");
-                        return;
-                    }
-
+                    // 🟢 Allow viewing even if within 24 hours
+                    // (Do NOT block here — backend will enforce 24-hour booking limit)
+                    
                     if (isMobile()) {
                         // ✅ Switch calendar to "day" view internally
                         calendar.changeView('timeGridDay', dateStr);
@@ -434,6 +431,7 @@
                         window.location.href = "{% url 'book_lesson' %}?date=" + clickedDate.toISOString();
                     }
                 },
+
 
                 dayCellClassNames: function(arg) {
                     const blockedDates = {{ blocked_dates|default:"[]"|safe }};

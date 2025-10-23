@@ -110,9 +110,19 @@ def book_lesson(request):
         form = BookingForm(request.POST, initial=initial_data)
         if form.is_valid():
             booking_date = form.cleaned_data['date']
+            booking_time = form.cleaned_data['start_time']
             today = date.today()
 
-            # Booking range logic
+            # Combine date and time to compare with current datetime
+            selected_datetime = datetime.combine(booking_date, booking_time)
+            now = datetime.now()
+
+            # ✅ Restrict bookings less than 24 hours away
+            if selected_datetime - now < timedelta(hours=24):
+                form.add_error(None, "You cannot book a lesson less than 24 hours in advance.")
+                return render(request, "bookings/booking_form.html", {"form": form})
+
+            # Booking range logic (current/next month restriction)
             end_of_current_month = (today.replace(day=1) + timedelta(days=32)).replace(day=1) - timedelta(days=1)
             seven_days_before_end = end_of_current_month - timedelta(days=7)
             next_month_start = (today.replace(day=1) + timedelta(days=32)).replace(day=1)
@@ -174,6 +184,7 @@ def book_lesson(request):
         form = BookingForm(initial=initial_data)
 
     return render(request, "bookings/booking_form.html", {"form": form})
+
 
 # ==========================
 # MY BOOKINGS

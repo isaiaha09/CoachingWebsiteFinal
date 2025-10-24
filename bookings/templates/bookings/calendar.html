@@ -503,27 +503,27 @@
                
 
                 validRange: function(nowDate) {
-                    const today = new Date(nowDate); // FullCalendar passes the current date here
+                    // FullCalendar passes the current date here
+                    const today = new Date(nowDate); 
                     const year = today.getFullYear();
-                    const month = today.getMonth(); // 0-indexed
+                    const month = today.getMonth(); // 0-indexed: Jan = 0, Dec = 11
 
-                    // Start = today
+                    // Start = today (can't select past dates)
                     const start = today;
 
-                    // Last day of this month
-                    const lastDayThisMonth = new Date(year, month + 1, 0);
-
-                    // Default end = last day of this month
-                    let end = lastDayThisMonth;
+                    // Last day of the current month, end of day
+                    let end = new Date(year, month + 1, 0, 23, 59, 59);
 
                     // First day of next month
                     const firstDayNextMonth = new Date(year, month + 1, 1);
 
-                    // If today is within 7 days of next month's 1st, allow full next month
+                    // Days until next month
                     const diffDays = Math.ceil((firstDayNextMonth - today) / (1000 * 60 * 60 * 24));
+
+                    // If today is within 7 days of the next month, unlock the whole next month
                     if (diffDays <= 7) {
-                        // Last day of next month
-                        const lastDayNextMonth = new Date(year, month + 2, 0);
+                        // Last day of next month, end of day
+                        const lastDayNextMonth = new Date(year, month + 2, 0, 23, 59, 59);
                         end = lastDayNextMonth;
                     }
 

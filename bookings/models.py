@@ -140,3 +140,39 @@ class Booking(models.Model):
 
     def __str__(self):
         return f"{self.client} - {self.date} {self.start_time}"
+    
+class DefaultDayHours(models.Model):
+    WEEKDAY_CHOICES = [
+        (0, 'Monday'),
+        (1, 'Tuesday'),
+        (2, 'Wednesday'),
+        (3, 'Thursday'),
+        (4, 'Friday'),
+        (5, 'Saturday'),
+        (6, 'Sunday'),
+    ]
+
+    weekday = models.IntegerField(choices=WEEKDAY_CHOICES, unique=True)
+    start_time = models.TimeField()
+    end_time = models.TimeField()
+
+    def __str__(self):
+        return f"{self.get_weekday_display()} {self.start_time}-{self.end_time}"
+    
+# Temporary override for specific dates
+class TemporaryDefaultOverride(models.Model):
+    start_date = models.DateField()
+    end_date = models.DateField()
+    start_time = models.TimeField()
+    end_time = models.TimeField()
+    reason = models.CharField(max_length=200, blank=True, null=True)
+
+    class Meta:
+        ordering = ['start_date']
+
+    def is_active(self):
+        today = date.today()
+        return self.start_date <= today <= self.end_date
+
+    def __str__(self):
+        return f"Override {self.start_time}-{self.end_time} ({self.start_date} → {self.end_date})"

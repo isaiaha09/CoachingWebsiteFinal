@@ -39,3 +39,6 @@ __pycache__/
 
 # Ignore all mp4 videos in Firebase public folder
 firebase_hosting/public/videos/*.mp4
+
+# db.sqlite3 database (in case it replaces other database live)
+db.sqlite3

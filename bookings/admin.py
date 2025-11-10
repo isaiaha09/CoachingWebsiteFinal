@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Client, Booking, LessonType, BlockedTime
+from .models import Client, Booking, LessonType, BlockedTime, DefaultDayHours, TemporaryDefaultOverride
 from django import forms
 from datetime import timedelta
 from .forms import BlockMultipleDaysForm
@@ -47,3 +47,12 @@ class BlockedTimeAdmin(admin.ModelAdmin):
         else:
             obj.date = start_date or obj.date
             super().save_model(request, obj, form, change)
+
+@admin.register(DefaultDayHours)
+class DefaultDayHoursAdmin(admin.ModelAdmin):
+    list_display = ['weekday', 'start_time', 'end_time']  # 'weekday' will show human-readable names
+    ordering = ['weekday']
+
+@admin.register(TemporaryDefaultOverride)
+class TemporaryDefaultOverrideAdmin(admin.ModelAdmin):
+    list_display = ['start_date', 'end_date', 'start_time', 'end_time', 'reason']

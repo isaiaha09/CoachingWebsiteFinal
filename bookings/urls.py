@@ -60,4 +60,6 @@ urlpatterns = [
     path('forgot_username/', views.forgot_username, name='forgot_username'),
 
     path('update_sms_opt_in/', views.update_sms_opt_in, name='update_sms_opt_in'),
+
+    path('get-default-hours/', views.get_default_hours, name='get_default_hours'),
 ]

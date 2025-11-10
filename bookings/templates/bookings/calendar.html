@@ -649,7 +649,7 @@
                 // Create day header
                 const parts = dateStr.split('-');
                 const selectedDate = new Date(parts[0], parts[1]-1, parts[2]); // local date
-                const weekday = selectedDate.getDay(); // 0=Sunday, 6=Saturday
+                const jsWeekday = selectedDate.getDay(); // 0=Sunday, 6=Saturday
 
                 const dayHeader = document.createElement('h2');
                 dayHeader.id = 'selectedDayHeader';
@@ -676,70 +676,100 @@
 
                 const blockedEvents = calendar.getEvents().filter(e => !e.allDay && e.extendedProps.blocked);
 
-                // Determine start/end hour
-                let startHour, endHour;
-                if (weekday === 0 || weekday === 6) { // weekend
-                    startHour = 9; endHour = 20;
-                } else { // weekdays
-                    startHour = 15; endHour = 20;
-                }
+                // === FETCH DEFAULT HOURS + TEMPORARY OVERRIDES ===
+                fetch("{% url 'get_default_hours' %}")
+                    .then(response => response.json())
+                    .then(data => {
+                        const defaults = data.defaults;
+                        const overrides = data.overrides || [];
 
-                for (let h = startHour; h <= endHour; h++) {
-                    ['00','30'].forEach(min => {
-                        const slotTime = new Date(parts[0], parts[1]-1, parts[2], h, parseInt(min));
-                        let displayHour = h % 12 === 0 ? 12 : h % 12;
-                        let ampm = h < 12 ? "AM" : "PM";
-                        let label = `${displayHour}:${min} ${ampm}`;
+                        // Convert JS weekday to model weekday (0=Monday)
+                        let weekday = jsWeekday === 0 ? 6 : jsWeekday - 1;
 
-                        const isBooked = blockedEvents.some(e => {
-                            const bStart = new Date(e.start);
-                            const bEnd = new Date(e.end);
-                            return slotTime >= bStart && slotTime < bEnd;
+                        // Start with default hours
+                        let dayHours = defaults[weekday] || { start: '09:00', end: '17:00' };
+
+                        const targetDate = selectedDate; // already a Date with correct local date
+                        const tempOverride = overrides.find(override => {
+                            const start = new Date(override.start_date);
+                            const end = new Date(override.end_date);
+
+                            // Compare only YYYY-MM-DD
+                            const targetStr = targetDate.toISOString().split('T')[0];
+                            const startStr = start.toISOString().split('T')[0];
+                            const endStr = end.toISOString().split('T')[0];
+
+                            return targetStr >= startStr && targetStr <= endStr;
                         });
-
-                        const now = new Date();
-                        const cutoff = new Date(now.getTime() + 24*60*60*1000);
-                        const tooSoon = slotTime < cutoff;
-
-                        const slot = document.createElement('div');
-                        slot.className = 'time-slot';
-
-                        // ✅ If fully blocked day, mark all slots as unavailable
-                        if (isFullyBlocked || isBooked || tooSoon) {
-                            slot.textContent = "Unavailable";
-                            slot.classList.add("booked");
-                        } else {
-                            slot.textContent = label;
-                            slot.addEventListener('click', () => {
-                                window.location.href = "{% url 'book_lesson' %}?date=" + toLocalISOString(slotTime);
-                            });
-                            slot.addEventListener('mouseover', () => slot.style.backgroundColor = '#c7b500');
-                            slot.addEventListener('mouseout', () => slot.style.backgroundColor = '#780090');
+                        if (tempOverride) {
+                            dayHours = { start: tempOverride.start_time, end: tempOverride.end_time };
                         }
 
-                        if (min === '00') col1.appendChild(slot);
-                        else col2.appendChild(slot);
-                    });
-                }
+                        const startParts = dayHours.start.split(':');
+                        const endParts = dayHours.end.split(':');
+                        const startHour = parseInt(startParts[0]);
+                        const endHour = parseInt(endParts[0]);
 
-                container.appendChild(col1);
-                container.appendChild(col2);
+                        // === GENERATE TIME CIRCLES ===
+                        for (let h = startHour; h <= endHour; h++) {
+                            ['00','30'].forEach(min => {
+                                const slotTime = new Date(parts[0], parts[1]-1, parts[2], h, parseInt(min));
+                                let displayHour = h % 12 === 0 ? 12 : h % 12;
+                                let ampm = h < 12 ? "AM" : "PM";
+                                let label = `${displayHour}:${min} ${ampm}`;
 
-                const timeGridTable = calendarEl.querySelector('.fc-timegrid');
-                if (timeGridTable) timeGridTable.style.display = 'none';
-            }
+                                const isBooked = blockedEvents.some(e => {
+                                    const bStart = new Date(e.start);
+                                    const bEnd = new Date(e.end);
+                                    return slotTime >= bStart && slotTime < bEnd;
+                                });
 
-            // Handle window resize
-            window.addEventListener('resize', () => {
-                if (isMobile()) {
-                    const circles = document.getElementById('desktopTimeSlots');
-                    if (circles) circles.remove();
+                                const now = new Date();
+                                const cutoff = new Date(now.getTime() + 24*60*60*1000);
+                                const tooSoon = slotTime < cutoff;
 
-                    const timeGridTable = document.querySelector('#calendar .fc-timegrid');
-                    if (timeGridTable) timeGridTable.style.display = 'table';
-                }
-            });
-        });
+                                const slot = document.createElement('div');
+                                slot.className = 'time-slot';
+
+                                if (isFullyBlocked || isBooked || tooSoon) {
+                                    slot.textContent = "Unavailable";
+                                    slot.classList.add("booked");
+                                } else {
+                                    slot.textContent = label;
+                                    slot.addEventListener('click', () => {
+                                        window.location.href = "{% url 'book_lesson' %}?date=" + toLocalISOString(slotTime);
+                                    });
+                                    slot.addEventListener('mouseover', () => slot.style.backgroundColor = '#c7b500');
+                                    slot.addEventListener('mouseout', () => slot.style.backgroundColor = '#780090');
+                                }
+
+                                if (min === '00') col1.appendChild(slot);
+                                else col2.appendChild(slot);
+                            });
+                        }
+
+                        container.appendChild(col1);
+                        container.appendChild(col2);
+
+                        // Hide original timegrid
+                        const timeGridTable = calendarEl.querySelector('.fc-timegrid');
+                        if (timeGridTable) timeGridTable.style.display = 'none';
+                    })
+                    .catch(err => console.error('Failed to fetch default hours:', err));
+
+                // Handle window resize
+                window.addEventListener('resize', () => {
+                    if (isMobile()) {
+                        const circles = document.getElementById('desktopTimeSlots');
+                        if (circles) circles.remove();
+
+                        const timeGridTable = document.querySelector('#calendar .fc-timegrid');
+                        if (timeGridTable) timeGridTable.style.display = 'table';
+                    }
+                });
+    }
+
+    });
     </script>
 
     <script>

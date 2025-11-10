@@ -12,7 +12,7 @@ from django.conf import settings
 from django.urls import reverse, reverse_lazy
 from datetime import datetime, timedelta, date
 from django.contrib.auth.models import User
-from .models import Booking, Client, LessonType, BlockedTime
+from .models import Booking, Client, LessonType, BlockedTime, DefaultDayHours, TemporaryDefaultOverride
 from .forms import BookingForm, SignUpForm, ForgotUsernameForm, CustomLoginForm, SMSOptInForm
 import json
 import requests 
@@ -604,3 +604,28 @@ class CustomPasswordResetView(PasswordResetView):
 
         # Skip the default email completely
         return redirect(self.success_url)
+
+
+def get_default_hours(request):
+    # Default hours
+    defaults = {
+        day.weekday: {
+            'start': day.start_time.strftime('%H:%M'),
+            'end': day.end_time.strftime('%H:%M')
+        }
+        for day in DefaultDayHours.objects.all()
+    }
+
+    # All temporary overrides
+    overrides_qs = TemporaryDefaultOverride.objects.all()
+    overrides = [
+        {
+            'start_date': o.start_date.isoformat(),
+            'end_date': o.end_date.isoformat(),
+            'start_time': o.start_time.strftime('%H:%M'),
+            'end_time': o.end_time.strftime('%H:%M'),
+        }
+        for o in overrides_qs
+    ]
+
+    return JsonResponse({'defaults': defaults, 'overrides': overrides})

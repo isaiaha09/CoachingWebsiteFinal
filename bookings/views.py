@@ -28,57 +28,68 @@ from django.utils.encoding import force_bytes
 import asyncio
 import aiohttp
 from .email_backends import send_booking_mail  # Import the function here
+import logging
 
+logger = logging.getLogger(__name__)
 
-
-# ==========================
-# CONTACT FORM
-# ==========================
-csrf_exempt  # Keep if your front-end handles CSRF differently
+@csrf_exempt  # Remove if CSRF is handled in frontend
 def contact(request):
-    if request.method == "POST":
-        try:
-            # Load JSON data from request body
-            data = json.loads(request.body)
+    try:
+        if request.method == "POST":
+            # Try JSON first, fallback to POST data
+            try:
+                data = json.loads(request.body)
+                logger.debug(f"Received JSON data: {data}")
+            except Exception:
+                data = request.POST
+                logger.debug(f"Received POST data: {data}")
 
-            # Get reCAPTCHA token
-            recaptcha_response = data.get('g-recaptcha-response')
+            recaptcha_response = data.get("g-recaptcha-response")
             if not recaptcha_response:
+                logger.warning("reCAPTCHA token missing")
                 return JsonResponse({"success": False, "message": "reCAPTCHA token missing."})
 
             # Verify reCAPTCHA
             verify = requests.post(
-                'https://www.google.com/recaptcha/api/siteverify',
+                "https://www.google.com/recaptcha/api/siteverify",
                 data={
-                    'secret': settings.RECAPTCHA_PRIVATE_KEY,
-                    'response': recaptcha_response
+                    "secret": settings.RECAPTCHA_PRIVATE_KEY,
+                    "response": recaptcha_response
                 },
                 timeout=10
             )
             result = verify.json()
-            if not result.get('success'):
+            logger.debug(f"reCAPTCHA verification result: {result}")
+
+            if not result.get("success"):
                 return JsonResponse({
                     "success": False,
-                    "message": "My apologies for the server being currently down. Please try again laer!"
+                    "message": "reCAPTCHA verification failed.",
+                    "details": result
                 })
 
-            # Prepare Brevo payload
+            # Extract form fields
+            firstname = data.get("firstname", "")
+            lastname = data.get("lastname", "")
+            email = data.get("email", "")
+            phone = data.get("phone", "")
+            message_text = data.get("message", "")
+
+            logger.debug(f"Contact form data: {firstname} {lastname}, {email}, {phone}, {message_text}")
+
+            # Send via Brevo
             payload = {
-                "sender": {
-                    "name": "Developmental Baseball",
-                    "email": "contact@coachalvarez44.com"
-                },
+                "sender": {"name": "Developmental Baseball", "email": "contact@coachalvarez44.com"},
                 "to": [{"email": settings.EMAIL_RECEIVER}],
                 "subject": data.get("subject", "New Contact Form Submission"),
                 "textContent": f"""
-Name: {data.get('firstname', '')} {data.get('lastname', '')}
-Email: {data.get('email', '')}
-Phone: {data.get('phone', '')}
-Message: {data.get('message', '')}
+Name: {firstname} {lastname}
+Email: {email}
+Phone: {phone}
+Message: {message_text}
 """
             }
 
-            # Send email via Brevo API
             response = requests.post(
                 "https://api.brevo.com/v3/smtp/email",
                 json=payload,
@@ -90,49 +101,58 @@ Message: {data.get('message', '')}
                 timeout=10
             )
             response.raise_for_status()
+            logger.info("Contact email sent successfully")
 
-            return JsonResponse({"success": True, "message": "Your message has been sent! I will respond as soon as I can! - Coach"})
+            return JsonResponse({"success": True, "message": "Your message has been sent!"})
 
-        except Exception as e:
-            return JsonResponse({"success": False, "message": "My apologies. The server is currently down. Please try again later!", "error": str(e)}, status=500)
+    except Exception as e:
+        logger.error(f"Error in contact form: {str(e)}", exc_info=True)
+        return JsonResponse({"success": False, "message": "Server error. Please try again later.", "error": str(e)}, status=500)
 
-    return render(request, 'bookings/contact.html')
-
+    return render(request, "bookings/contact.html", {"RECAPTCHA_PUBLIC_KEY": settings.RECAPTCHA_PUBLIC_KEY})
 
 # ==========================
 # SIGNUP
 # ==========================
 def signup(request):
-    if request.method == "POST":
-        form = SignUpForm(request.POST)
+    try:
+        if request.method == "POST":
+            form = SignUpForm(request.POST)
 
-        # Verify reCAPTCHA first
-        recaptcha_response = request.POST.get('g-recaptcha-response')
-        verify = requests.post(
-            'https://www.google.com/recaptcha/api/siteverify',
-            data={
-                'secret': settings.RECAPTCHA_PRIVATE_KEY,
-                'response': recaptcha_response
-            }
-        )
-        result = verify.json()
+            recaptcha_response = request.POST.get("g-recaptcha-response")
+            if not recaptcha_response:
+                messages.error(request, "reCAPTCHA token missing!")
+                return render(request, "bookings/signup.html", {"form": form, "RECAPTCHA_PUBLIC_KEY": settings.RECAPTCHA_PUBLIC_KEY})
 
-        if not result.get('success'):
-            messages.error(request, "My apologies for the server being down. Please try again later!")
-            return render(request, "bookings/signup.html", {"form": form, "RECAPTCHA_PUBLIC_KEY": settings.RECAPTCHA_PUBLIC_KEY})
+            # Verify reCAPTCHA
+            verify = requests.post(
+                "https://www.google.com/recaptcha/api/siteverify",
+                data={"secret": settings.RECAPTCHA_PRIVATE_KEY, "response": recaptcha_response},
+                timeout=10
+            )
+            result = verify.json()
+            if not result.get("success"):
+                messages.error(request, f"reCAPTCHA failed: {result}")
+                return render(request, "bookings/signup.html", {"form": form, "RECAPTCHA_PUBLIC_KEY": settings.RECAPTCHA_PUBLIC_KEY})
 
-        # Validate form
-        if form.is_valid():
-            user = form.save()
-            login(request, user)
-            return redirect("client_menu")
+            # Validate form
+            if form.is_valid():
+                user = form.save()
+                login(request, user)
+                return redirect("client_menu")
+            else:
+                messages.error(request, "Please correct the errors in the form.")
+
         else:
-            messages.error(request, "Please correct the errors in the form.")
-    else:
-        form = SignUpForm()
+            form = SignUpForm()
 
-    return render(request, "bookings/signup.html", {"form": form, "RECAPTCHA_PUBLIC_KEY": settings.RECAPTCHA_PUBLIC_KEY})
+        return render(request, "bookings/signup.html", {"form": form, "RECAPTCHA_PUBLIC_KEY": settings.RECAPTCHA_PUBLIC_KEY})
 
+    except Exception as e:
+        messages.error(request, f"Server error: {str(e)}")
+        logger.error(f"Error in signup view: {str(e)}", exc_info=True)
+        return render(request, "bookings/signup.html", {"form": SignUpForm(), "RECAPTCHA_PUBLIC_KEY": settings.RECAPTCHA_PUBLIC_KEY})
+    
 
 # ==========================
 # CLIENT MENU

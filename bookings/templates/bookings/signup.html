@@ -102,6 +102,22 @@
             </p>
         </div>
         <script>
+            document.getElementById("signupForm").addEventListener("submit", function(e){
+                const recaptchaToken = grecaptcha.getResponse();
+                if (!recaptchaToken) {
+                    e.preventDefault(); // stop form submission
+                    alert("Please complete the reCAPTCHA.");
+                    return;
+                }
+                // Add token to form before submit
+                let hiddenInput = document.createElement("input");
+                hiddenInput.type = "hidden";
+                hiddenInput.name = "g-recaptcha-response";
+                hiddenInput.value = recaptchaToken;
+                this.appendChild(hiddenInput);
+            });
+            </script>
+        <script>
             function toggleMenu() {
                 const menu = document.querySelector('.mobile-menu');
                 const hamburger = document.querySelector('.hamburger');

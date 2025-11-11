@@ -11,6 +11,7 @@ from bookings.views import CustomPasswordResetView
 
 urlpatterns = [
     path('', TemplateView.as_view(template_name='bookings/index.html'), name='index'),
+    
 
     path('book-lesson/', views.book_lesson, name='book_lesson'), # shows the form at /bookings/
     path('my-bookings/', views.my_bookings, name='my_bookings'),

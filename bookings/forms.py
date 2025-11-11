@@ -10,6 +10,7 @@ from django.contrib.auth.forms import PasswordResetForm
 
 
 
+
 class SignUpForm(UserCreationForm):
     email = forms.EmailField(required=True)
     phone = forms.CharField(required=False)

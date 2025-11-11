@@ -34,22 +34,51 @@ from .email_backends import send_booking_mail  # Import the function here
 # ==========================
 # CONTACT FORM
 # ==========================
-@csrf_exempt  # Remove if you handle CSRF in front-end
+csrf_exempt  # Keep if your front-end handles CSRF differently
 def contact(request):
     if request.method == "POST":
         try:
+            # Load JSON data from request body
             data = json.loads(request.body)
+
+            # Get reCAPTCHA token
+            recaptcha_response = data.get('g-recaptcha-response')
+            if not recaptcha_response:
+                return JsonResponse({"success": False, "message": "reCAPTCHA token missing."})
+
+            # Verify reCAPTCHA
+            verify = requests.post(
+                'https://www.google.com/recaptcha/api/siteverify',
+                data={
+                    'secret': settings.RECAPTCHA_PRIVATE_KEY,
+                    'response': recaptcha_response
+                },
+                timeout=10
+            )
+            result = verify.json()
+            if not result.get('success'):
+                return JsonResponse({
+                    "success": False,
+                    "message": "My apologies for the server being currently down. Please try again laer!"
+                })
+
+            # Prepare Brevo payload
             payload = {
-                "sender": {"name": "Developmental Baseball", "email": "contact@coachalvarez44.com"},
+                "sender": {
+                    "name": "Developmental Baseball",
+                    "email": "contact@coachalvarez44.com"
+                },
                 "to": [{"email": settings.EMAIL_RECEIVER}],
                 "subject": data.get("subject", "New Contact Form Submission"),
                 "textContent": f"""
-Name: {data.get('firstname')} {data.get('lastname')}
-Email: {data.get('email')}
-Phone: {data.get('phone')}
-Message: {data.get('message')}
-""",
+Name: {data.get('firstname', '')} {data.get('lastname', '')}
+Email: {data.get('email', '')}
+Phone: {data.get('phone', '')}
+Message: {data.get('message', '')}
+"""
             }
+
+            # Send email via Brevo API
             response = requests.post(
                 "https://api.brevo.com/v3/smtp/email",
                 json=payload,
@@ -61,9 +90,12 @@ Message: {data.get('message')}
                 timeout=10
             )
             response.raise_for_status()
-            return JsonResponse({"success": True, "message": "Your message has been sent to me! I will get back to you soon!"})
+
+            return JsonResponse({"success": True, "message": "Your message has been sent! I will respond as soon as I can! - Coach"})
+
         except Exception as e:
-            return JsonResponse({"success": False, "message": "Server error. Try again later.", "error": str(e)}, status=500)
+            return JsonResponse({"success": False, "message": "My apologies. The server is currently down. Please try again later!", "error": str(e)}, status=500)
+
     return render(request, 'bookings/contact.html')
 
 
@@ -73,13 +105,33 @@ Message: {data.get('message')}
 def signup(request):
     if request.method == "POST":
         form = SignUpForm(request.POST)
+
+        # Verify reCAPTCHA first
+        recaptcha_response = request.POST.get('g-recaptcha-response')
+        verify = requests.post(
+            'https://www.google.com/recaptcha/api/siteverify',
+            data={
+                'secret': settings.RECAPTCHA_PRIVATE_KEY,
+                'response': recaptcha_response
+            }
+        )
+        result = verify.json()
+
+        if not result.get('success'):
+            messages.error(request, "My apologies for the server being down. Please try again later!")
+            return render(request, "bookings/signup.html", {"form": form, "RECAPTCHA_PUBLIC_KEY": settings.RECAPTCHA_PUBLIC_KEY})
+
+        # Validate form
         if form.is_valid():
             user = form.save()
             login(request, user)
             return redirect("client_menu")
+        else:
+            messages.error(request, "Please correct the errors in the form.")
     else:
         form = SignUpForm()
-    return render(request, "bookings/signup.html", {"form": form})
+
+    return render(request, "bookings/signup.html", {"form": form, "RECAPTCHA_PUBLIC_KEY": settings.RECAPTCHA_PUBLIC_KEY})
 
 
 # ==========================
@@ -414,8 +466,7 @@ Your lesson has been booked!
         "textContent": message_text
     }
 
-    import requests
-    from django.conf import settings
+
 
     try:
         response = requests.post(
@@ -432,7 +483,7 @@ Your lesson has been booked!
         return None
 
 def send_24hr_booking_reminder(booking):
-    import requests
+
     from django.conf import settings
 
     client_email = booking.client.email
@@ -463,9 +514,7 @@ def send_24hr_booking_reminder(booking):
     print(f"24-hour reminder sent to {client_email}!")
 
 
-from datetime import datetime, timedelta
-import requests
-from django.conf import settings
+
 
 def send_24hr_email_reminder(booking):
     if not booking.client or not booking.client.email:

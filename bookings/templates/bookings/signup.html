@@ -87,8 +87,12 @@
             <form method="POST">
                 {%  csrf_token %}
                 {{form.as_p}}
+                
+                <div class="g-recaptcha" data-sitekey="6Lff3ggsAAAAAPr7P-AAOr2pCCFiy_W6mfAPSa_j" ></div>
+
                 <button type = "submit">Register</button>
             </form>
+            <script src="https://www.google.com/recaptcha/api.js" async defer></script>
             <p>Already have an account? <a href="{% url 'login' %}" class="login-link">Login Here</a></p>
         </main>
         <div class="footerBottom">

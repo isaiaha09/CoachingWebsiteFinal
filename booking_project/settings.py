@@ -56,6 +56,11 @@ INSTALLED_APPS = [
     'bookings',
 ]
 
+RECAPTCHA_PUBLIC_KEY = os.getenv('RECAPTCHA_PUBLIC_KEY')
+RECAPTCHA_PRIVATE_KEY = os.getenv('RECAPTCHA_PRIVATE_KEY')
+
+SILENCED_SYSTEM_CHECKS = os.getenv('SILENCED_SYSTEM_CHECKS')
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

@@ -88,7 +88,7 @@
                 {%  csrf_token %}
                 {{form.as_p}}
                 
-                <div class="g-recaptcha" data-sitekey="6Lff3ggsAAAAAPr7P-AAOr2pCCFiy_W6mfAPSa_j" ></div>
+                <div class="g-recaptcha" data-sitekey="{{ RECAPTCHA_PUBLIC_KEY|default: '6Lff3ggsAAAAAPr7P-AAOr2pCCFiy_W6mfAPSa_j' }}" ></div>
 
                 <button type = "submit">Register</button>
             </form>

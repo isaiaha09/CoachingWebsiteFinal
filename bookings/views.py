@@ -116,35 +116,31 @@ Message: {message_text}
 # ==========================
 def signup(request):
     try:
-        if request.method == "POST":
-            form = SignUpForm(request.POST)
+        form = SignUpForm(request.POST or None)
 
+        if request.method == "POST":
             recaptcha_response = request.POST.get("g-recaptcha-response")
+            logger.debug(f"reCAPTCHA token: {recaptcha_response}")
+
             if not recaptcha_response:
                 messages.error(request, "reCAPTCHA token missing!")
-                return render(request, "bookings/signup.html", {"form": form, "RECAPTCHA_PUBLIC_KEY": settings.RECAPTCHA_PUBLIC_KEY})
-
-            # Verify reCAPTCHA
-            verify = requests.post(
-                "https://www.google.com/recaptcha/api/siteverify",
-                data={"secret": settings.RECAPTCHA_PRIVATE_KEY, "response": recaptcha_response},
-                timeout=10
-            )
-            result = verify.json()
-            if not result.get("success"):
-                messages.error(request, f"reCAPTCHA failed: {result}")
-                return render(request, "bookings/signup.html", {"form": form, "RECAPTCHA_PUBLIC_KEY": settings.RECAPTCHA_PUBLIC_KEY})
-
-            # Validate form
-            if form.is_valid():
-                user = form.save()
-                login(request, user)
-                return redirect("client_menu")
             else:
-                messages.error(request, "Please correct the errors in the form.")
+                verify = requests.post(
+                    "https://www.google.com/recaptcha/api/siteverify",
+                    data={"secret": settings.RECAPTCHA_PRIVATE_KEY, "response": recaptcha_response},
+                    timeout=10
+                )
+                result = verify.json()
+                logger.debug(f"reCAPTCHA verification result: {result}")
 
-        else:
-            form = SignUpForm()
+                if not result.get("success"):
+                    messages.error(request, f"reCAPTCHA failed: {result}")
+                elif form.is_valid():
+                    user = form.save()
+                    login(request, user)
+                    return redirect("client_menu")
+                else:
+                    messages.error(request, "Please correct the errors in the form.")
 
         return render(request, "bookings/signup.html", {"form": form, "RECAPTCHA_PUBLIC_KEY": settings.RECAPTCHA_PUBLIC_KEY})
 
@@ -152,7 +148,6 @@ def signup(request):
         messages.error(request, f"Server error: {str(e)}")
         logger.error(f"Error in signup view: {str(e)}", exc_info=True)
         return render(request, "bookings/signup.html", {"form": SignUpForm(), "RECAPTCHA_PUBLIC_KEY": settings.RECAPTCHA_PUBLIC_KEY})
-    
 
 # ==========================
 # CLIENT MENU

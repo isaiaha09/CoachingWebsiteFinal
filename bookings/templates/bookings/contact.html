@@ -179,8 +179,17 @@ My Personal Baseball Instructor Contact (remake)
                 document.getElementById("contactForm").addEventListener("submit", async (e) => {
                     e.preventDefault(); // prevent default form submission
 
+                    const recaptchaToken = grecaptcha.getResponse();  // <-- ADD THIS
+                    if (!recaptchaToken) {
+                        alert("Please complete the reCAPTCHA.");
+                        return;
+                    }
+
                     const formData = new FormData(e.target);
                     const data = Object.fromEntries(formData.entries());
+
+                    data["g-recaptcha-response"] = recaptchaToken; // <-- ADD THIS
+
                     const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
 
                     try {
@@ -189,7 +198,7 @@ My Personal Baseball Instructor Contact (remake)
                             headers: { 
                                 "Content-Type": "application/json",
                                 "X-CSRFToken": csrfToken
-                        },
+                            },
                             body: JSON.stringify(data),
                         });
 
@@ -198,12 +207,13 @@ My Personal Baseball Instructor Contact (remake)
                         if(result.success){
                             alert("✅ " + result.message);
                             e.target.reset(); // clears the form
+                            grecaptcha.reset(); // <-- reset reCAPTCHA
                         } else {
                             alert("❌ " + result.message);
                         }
                     } catch (error) {
                         console.error(error);
-                        alert("❌ The server is currently down my contact form is not working at the moment. Please try again in a few minutes!");
+                        alert("❌ The server is currently down. Please try again in a few minutes!");
                     }
                 });
                 function toggleMenu() {

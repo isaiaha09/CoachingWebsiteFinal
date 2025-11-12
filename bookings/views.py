@@ -89,7 +89,7 @@ def contact(request):
 
     return render(request, "bookings/contact.html", {"RECAPTCHA_PUBLIC_KEY": settings.RECAPTCHA_PUBLIC_KEY})
 
-    
+
 
 # ==========================
 # SIGNUP
@@ -103,7 +103,7 @@ def signup(request):
             logger.debug(f"reCAPTCHA token: {recaptcha_response}")
 
             if not recaptcha_response:
-                messages.error(request, "reCAPTCHA token missing!")
+                messages.error(request, "Please complete the reCAPTCHA.")
             else:
                 verify = requests.post(
                     "https://www.google.com/recaptcha/api/siteverify",
@@ -114,7 +114,7 @@ def signup(request):
                 logger.debug(f"reCAPTCHA verification result: {result}")
 
                 if not result.get("success"):
-                    messages.error(request, f"reCAPTCHA failed: {result}")
+                    messages.error(request, "reCAPTCHA verification failed. Please try again.")
                 elif form.is_valid():
                     user = form.save()
                     login(request, user)

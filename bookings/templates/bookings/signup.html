@@ -105,18 +105,25 @@
             document.getElementById("signupForm").addEventListener("submit", function(e){
                 const recaptchaToken = grecaptcha.getResponse();
                 if (!recaptchaToken) {
-                    e.preventDefault(); // stop form submission
+                    e.preventDefault(); // stop form submission if no token
                     alert("Please complete the reCAPTCHA.");
                     return;
                 }
+
+                // Remove any existing hidden input
+                const existingInput = this.querySelector('input[name="g-recaptcha-response"]');
+                if (existingInput) existingInput.remove();
+
                 // Add token to form before submit
-                let hiddenInput = document.createElement("input");
+                const hiddenInput = document.createElement("input");
                 hiddenInput.type = "hidden";
                 hiddenInput.name = "g-recaptcha-response";
                 hiddenInput.value = recaptchaToken;
                 this.appendChild(hiddenInput);
+
+                // Let the form submit normally
             });
-            </script>
+        </script>
         <script>
             function toggleMenu() {
                 const menu = document.querySelector('.mobile-menu');

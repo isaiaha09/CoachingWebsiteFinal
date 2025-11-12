@@ -178,7 +178,10 @@ My Personal Baseball Instructor Contact (remake)
                 document.getElementById("contactForm").addEventListener("submit", async (e) => {
                     e.preventDefault();
 
+                     // ✅ Add this line here
                     const recaptchaToken = grecaptcha.getResponse();
+                    console.log("Token being sent:", recaptchaToken); // <-- debug
+
                     if (!recaptchaToken) {
                         alert("Please complete the reCAPTCHA.");
                         return;

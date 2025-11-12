@@ -84,7 +84,7 @@
                 <span id="ios-banner-close">✕</span>
             </p>
             </div>
-            <form method="POST">
+            <form id="signupForm" method="POST">
                 {%  csrf_token %}
                 {{form.as_p}}
                 

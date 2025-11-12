@@ -96,31 +96,29 @@ My Personal Baseball Instructor Contact (remake)
             </p>
 
             <div class="contactContainer">
-                <form id="contactForm">
-                    <label for="fname">First Name</label>
-                    <input type="text" id="fname" name="firstname" placeholder="Your name.." required>
-                
-                    <label for="lname">Last Name</label>
-                    <input type="text" id="lname" name="lastname" placeholder="Your last name.." required>
-                
-                    <label for="email">Email</label>
-                    <input type="email" id="email" name="email" placeholder="Your@email.com" required>
+                <form id="contactForm" method="POST">
+                {% csrf_token %}
+                <label for="fname">First Name</label>
+                <input type="text" id="fname" name="firstname" required>
 
-                    <label for="phone">Phone Number</label>
-                    <input type="tel" id="phone" name="phone" placeholder= "(123) 456-7890" required>
+                <label for="lname">Last Name</label>
+                <input type="text" id="lname" name="lastname" required>
 
-                    <label for="subject">Subject</label>
-                    <input type="text" id="inputSubject" name="subject" placeholder="Input Subject.." required>
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" required>
 
-                    <label for="message">Message</label>
-                    <textarea id="message" name="message" placeholder="Type your message.." style="height: 200px" required></textarea>
-                    
-                    <div class="g-recaptcha" data-sitekey="{{ RECAPTCHA_PUBLIC_KEY }}"></div>                    
-                    <input type="submit" value="Submit">
+                <label for="phone">Phone</label>
+                <input type="tel" id="phone" name="phone" required>
 
-                </form>
+                <label for="subject">Subject</label>
+                <input type="text" id="inputSubject" name="subject" required>
 
-                <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+                <label for="message">Message</label>
+                <textarea id="message" name="message" required></textarea>
+
+                <div class="g-recaptcha" data-sitekey="{{ RECAPTCHA_PUBLIC_KEY }}"></div>
+                <input type="submit" value="Submit">
+            </form>
                 
             </div>
             <div class = "message">
@@ -169,6 +167,7 @@ My Personal Baseball Instructor Contact (remake)
             </div>
 
             -->
+            <script src="https://www.google.com/recaptcha/api.js" async defer></script>
             <div class="footerBottom">
                 <p>
                     Copyright &copy; <span id="currentYear"></span>; Designed by 
@@ -177,43 +176,36 @@ My Personal Baseball Instructor Contact (remake)
             </div>
             <script>
                 document.getElementById("contactForm").addEventListener("submit", async (e) => {
-                    e.preventDefault(); // prevent default form submission
+                    e.preventDefault();
 
-                    const recaptchaToken = grecaptcha.getResponse();  // <-- ADD THIS
+                    const recaptchaToken = grecaptcha.getResponse();
                     if (!recaptchaToken) {
                         alert("Please complete the reCAPTCHA.");
                         return;
                     }
 
-                    const formData = new FormData(e.target);
-                    const data = Object.fromEntries(formData.entries());
-
-                    data["g-recaptcha-response"] = recaptchaToken; // <-- ADD THIS
-
-                    const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+                    const form = e.target;
+                    const formData = new FormData(form);
+                    formData.append("g-recaptcha-response", recaptchaToken);
 
                     try {
-                        const response = await fetch("/contact/", {
+                        const response = await fetch("{% url 'contact' %}", {
                             method: "POST",
-                            headers: { 
-                                "Content-Type": "application/json",
-                                "X-CSRFToken": csrfToken
-                            },
-                            body: JSON.stringify(data),
+                            body: formData,  // send as FormData
                         });
 
                         const result = await response.json();
 
-                        if(result.success){
+                        if (result.success) {
                             alert("✅ " + result.message);
-                            e.target.reset(); // clears the form
-                            grecaptcha.reset(); // <-- reset reCAPTCHA
+                            form.reset();
+                            grecaptcha.reset();
                         } else {
                             alert("❌ " + result.message);
                         }
-                    } catch (error) {
-                        console.error(error);
-                        alert("❌ The server is currently down. Please try again in a few minutes!");
+                    } catch (err) {
+                        console.error(err);
+                        alert("❌ Server error, please try again later.");
                     }
                 });
                 function toggleMenu() {

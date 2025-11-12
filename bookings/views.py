@@ -32,84 +32,64 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-@csrf_exempt  # Remove if CSRF is handled in frontend
 def contact(request):
-    try:
-        if request.method == "POST":
-            # Try JSON first, fallback to POST data
-            try:
-                data = json.loads(request.body)
-                logger.debug(f"Received JSON data: {data}")
-            except Exception:
-                data = request.POST
-                logger.debug(f"Received POST data: {data}")
+    if request.method == "POST":
+        data = request.POST
+        recaptcha_response = data.get("g-recaptcha-response")
 
-            recaptcha_response = data.get("g-recaptcha-response")
-            if not recaptcha_response:
-                logger.warning("reCAPTCHA token missing")
-                return JsonResponse({"success": False, "message": "reCAPTCHA token missing."})
+        if not recaptcha_response:
+            return JsonResponse({"success": False, "message": "reCAPTCHA token missing."})
 
-            # Verify reCAPTCHA
-            verify = requests.post(
-                "https://www.google.com/recaptcha/api/siteverify",
-                data={
-                    "secret": settings.RECAPTCHA_PRIVATE_KEY,
-                    "response": recaptcha_response
-                },
-                timeout=10
-            )
-            result = verify.json()
-            logger.debug(f"reCAPTCHA verification result: {result}")
+        # Verify reCAPTCHA
+        verify = requests.post(
+            "https://www.google.com/recaptcha/api/siteverify",
+            data={
+                "secret": settings.RECAPTCHA_PRIVATE_KEY,
+                "response": recaptcha_response
+            },
+            timeout=10
+        )
+        result = verify.json()
+        logger.debug(f"reCAPTCHA verification result: {result}")
 
-            if not result.get("success"):
-                return JsonResponse({
-                    "success": False,
-                    "message": "reCAPTCHA verification failed.",
-                    "details": result
-                })
+        if not result.get("success"):
+            return JsonResponse({"success": False, "message": "reCAPTCHA verification failed."})
 
-            # Extract form fields
-            firstname = data.get("firstname", "")
-            lastname = data.get("lastname", "")
-            email = data.get("email", "")
-            phone = data.get("phone", "")
-            message_text = data.get("message", "")
+        # Extract form data
+        firstname = data.get("firstname")
+        lastname = data.get("lastname")
+        email = data.get("email")
+        phone = data.get("phone")
+        subject = data.get("subject")
+        message_text = data.get("message")
 
-            logger.debug(f"Contact form data: {firstname} {lastname}, {email}, {phone}, {message_text}")
+        # Send email via Brevo or other method
+        payload = {
+            "sender": {"name": "Developmental Baseball", "email": "contact@coachalvarez44.com"},
+            "to": [{"email": settings.EMAIL_RECEIVER}],
+            "subject": subject,
+            "textContent": f"Name: {firstname} {lastname}\nEmail: {email}\nPhone: {phone}\nMessage: {message_text}"
+        }
 
-            # Send via Brevo
-            payload = {
-                "sender": {"name": "Developmental Baseball", "email": "contact@coachalvarez44.com"},
-                "to": [{"email": settings.EMAIL_RECEIVER}],
-                "subject": data.get("subject", "New Contact Form Submission"),
-                "textContent": f"""
-Name: {firstname} {lastname}
-Email: {email}
-Phone: {phone}
-Message: {message_text}
-"""
-            }
-
+        try:
             response = requests.post(
                 "https://api.brevo.com/v3/smtp/email",
                 json=payload,
                 headers={
                     "api-key": settings.BREVO_API_KEY,
-                    "Content-Type": "application/json",
-                    "Accept": "application/json",
+                    "Content-Type": "application/json"
                 },
                 timeout=10
             )
             response.raise_for_status()
-            logger.info("Contact email sent successfully")
-
             return JsonResponse({"success": True, "message": "Your message has been sent!"})
-
-    except Exception as e:
-        logger.error(f"Error in contact form: {str(e)}", exc_info=True)
-        return JsonResponse({"success": False, "message": "Server error. Please try again later.", "error": str(e)}, status=500)
+        except Exception as e:
+            logger.error(f"Error sending contact email: {e}")
+            return JsonResponse({"success": False, "message": "Failed to send email."})
 
     return render(request, "bookings/contact.html", {"RECAPTCHA_PUBLIC_KEY": settings.RECAPTCHA_PUBLIC_KEY})
+
+    
 
 # ==========================
 # SIGNUP

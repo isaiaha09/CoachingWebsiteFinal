@@ -72,6 +72,7 @@ def contact(request):
         }
 
         try:
+            logger.debug(f"Live BREVO_API_KEY first 5 chars: {settings.BREVO_API_KEY[:5]}...")
             response = requests.post(
                 "https://api.brevo.com/v3/smtp/email",
                 json=payload,

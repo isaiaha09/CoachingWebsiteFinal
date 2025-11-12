@@ -30,7 +30,7 @@ urlpatterns = [
     path('gallery/', TemplateView.as_view(template_name='bookings/gallery.html'), name='gallery'),
     path('my-story/', TemplateView.as_view(template_name='bookings/my-story.html'), name='my-story'),
     path('credibility/', TemplateView.as_view(template_name='bookings/credibility.html'), name='credibility'),
-
+    path('test-brevo/', views.test_brevo_key, name='test_brevo_key'),
 
     # Password reset views with app namespace
      path(

@@ -32,6 +32,39 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+def test_brevo_key(request):
+    """
+    Test Brevo API key without sending email
+    """
+    payload = {
+        "sender": {"name": "Test", "email": "contact@coachalvarez44.com"},
+        "to": [{"email": "isaiah.aris@gmail.com"}],
+        "subject": "Test Email Key",
+        "textContent": "This is just a test to verify the API key."
+    }
+
+    try:
+        response = requests.post(
+            "https://api.brevo.com/v3/smtp/email",
+            json=payload,
+            headers={
+                "api-key": settings.BREVO_API_KEY,
+                "Content-Type": "application/json"
+            },
+            timeout=10
+        )
+        # Log status and return JSON
+        logger.debug(f"Brevo test response status: {response.status_code}")
+        logger.debug(f"Brevo test response body: {response.text}")
+        return JsonResponse({
+            "status_code": response.status_code,
+            "response": response.json() if response.content else {}
+        })
+    except Exception as e:
+        logger.error(f"Error testing Brevo API key: {e}")
+        return JsonResponse({"error": str(e)})
+
+
 def contact(request):
     if request.method == "POST":
         data = request.POST
@@ -72,7 +105,7 @@ def contact(request):
         }
 
         try:
-            logger.debug(f"Live BREVO_API_KEY first 5 chars: {settings.BREVO_API_KEY[:5]}...")
+            logger.debug(f"Live BREVO_API_KEY first 25 chars: {settings.BREVO_API_KEY[:25]}...")
             response = requests.post(
                 "https://api.brevo.com/v3/smtp/email",
                 json=payload,

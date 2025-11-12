@@ -97,29 +97,29 @@ My Personal Baseball Instructor Contact (remake)
 
             <div class="contactContainer">
                 <form id="contactForm" method="POST">
-                {% csrf_token %}
-                <label for="fname">First Name</label>
-                <input type="text" id="fname" name="firstname" required>
+                    {% csrf_token %}
+                    
+                    <label for="fname">First Name</label>
+                    <input type="text" id="fname" name="firstname" placeholder="Enter your first name" required>
 
-                <label for="lname">Last Name</label>
-                <input type="text" id="lname" name="lastname" required>
+                    <label for="lname">Last Name</label>
+                    <input type="text" id="lname" name="lastname" placeholder="Enter your last name" required>
 
-                <label for="email">Email</label>
-                <input type="email" id="email" name="email" required>
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" placeholder="Enter your email address" required>
 
-                <label for="phone">Phone</label>
-                <input type="tel" id="phone" name="phone" required>
+                    <label for="phone">Phone</label>
+                    <input type="tel" id="phone" name="phone" placeholder="Enter your phone number" required>
 
-                <label for="subject">Subject</label>
-                <input type="text" id="inputSubject" name="subject" required>
+                    <label for="subject">Subject</label>
+                    <input type="text" id="inputSubject" name="subject" placeholder="Subject of your message" required>
 
-                <label for="message">Message</label>
-                <textarea id="message" name="message" required></textarea>
+                    <label for="message">Message</label>
+                    <textarea id="message" name="message" placeholder="Type your message here" required></textarea>
 
-                <div class="g-recaptcha" data-sitekey="{{ RECAPTCHA_PUBLIC_KEY }}"></div>
-                <input type="submit" value="Submit">
-            </form>
-                
+                    <div class="g-recaptcha" data-sitekey="{{ RECAPTCHA_PUBLIC_KEY }}"></div>
+                    <input type="submit" value="Submit">
+                </form>
             </div>
             <div class = "message">
                 <div class="success" id="success"> Your Message Was Sent Successfully! Thank You And We'll Be In Touch Soon!</div>

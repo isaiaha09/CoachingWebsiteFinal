@@ -28,41 +28,6 @@ from django.utils.encoding import force_bytes
 import asyncio
 import aiohttp
 from .email_backends import send_booking_mail  # Import the function here
-import logging
-
-logger = logging.getLogger(__name__)
-
-def test_brevo_key(request):
-    """
-    Test Brevo API key without sending email
-    """
-    payload = {
-        "sender": {"name": "Test", "email": "contact@coachalvarez44.com"},
-        "to": [{"email": "isaiah.aris@gmail.com"}],
-        "subject": "Test Email Key",
-        "textContent": "This is just a test to verify the API key."
-    }
-
-    try:
-        response = requests.post(
-            "https://api.brevo.com/v3/smtp/email",
-            json=payload,
-            headers={
-                "api-key": settings.BREVO_API_KEY,
-                "Content-Type": "application/json"
-            },
-            timeout=10
-        )
-        # Log status and return JSON
-        logger.debug(f"Brevo test response status: {response.status_code}")
-        logger.debug(f"Brevo test response body: {response.text}")
-        return JsonResponse({
-            "status_code": response.status_code,
-            "response": response.json() if response.content else {}
-        })
-    except Exception as e:
-        logger.error(f"Error testing Brevo API key: {e}")
-        return JsonResponse({"error": str(e)})
 
 
 def contact(request):
@@ -83,10 +48,9 @@ def contact(request):
             timeout=10
         )
         result = verify.json()
-        logger.debug(f"reCAPTCHA verification result: {result}")
 
         if not result.get("success"):
-            return JsonResponse({"success": False, "message": "reCAPTCHA verification failed."})
+            return JsonResponse({"success": False, "message": "reCAPTCHA verification failed. My apologies. Please try again later!"})
 
         # Extract form data
         firstname = data.get("firstname")
@@ -105,7 +69,6 @@ def contact(request):
         }
 
         try:
-            logger.debug(f"Live BREVO_API_KEY first 25 chars: {settings.BREVO_API_KEY[:25]}...")
             response = requests.post(
                 "https://api.brevo.com/v3/smtp/email",
                 json=payload,
@@ -116,10 +79,9 @@ def contact(request):
                 timeout=10
             )
             response.raise_for_status()
-            return JsonResponse({"success": True, "message": "Your message has been sent!"})
+            return JsonResponse({"success": True, "message": "Your message has been sent! I'll contact you soon! - Coach"})
         except Exception as e:
-            logger.error(f"Error sending contact email: {e}")
-            return JsonResponse({"success": False, "message": "Failed to send email."})
+            return JsonResponse({"success": False, "message": "Failed to send email. Server is currently down. Please try again later!"})
 
     return render(request, "bookings/contact.html", {"RECAPTCHA_PUBLIC_KEY": settings.RECAPTCHA_PUBLIC_KEY})
 
@@ -134,7 +96,6 @@ def signup(request):
 
         if request.method == "POST":
             recaptcha_response = request.POST.get("g-recaptcha-response")
-            logger.debug(f"reCAPTCHA token: {recaptcha_response}")
 
             if not recaptcha_response:
                 messages.error(request, "Please complete the reCAPTCHA.")
@@ -145,7 +106,6 @@ def signup(request):
                     timeout=10
                 )
                 result = verify.json()
-                logger.debug(f"reCAPTCHA verification result: {result}")
 
                 if not result.get("success"):
                     messages.error(request, "reCAPTCHA verification failed. Please try again.")
@@ -160,7 +120,6 @@ def signup(request):
 
     except Exception as e:
         messages.error(request, f"Server error: {str(e)}")
-        logger.error(f"Error in signup view: {str(e)}", exc_info=True)
         return render(request, "bookings/signup.html", {"form": SignUpForm(), "RECAPTCHA_PUBLIC_KEY": settings.RECAPTCHA_PUBLIC_KEY})
 
 # ==========================

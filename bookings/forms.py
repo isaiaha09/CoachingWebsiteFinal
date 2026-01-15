@@ -110,8 +110,8 @@ class CustomLoginForm(AuthenticationForm):
 
 
 class BlockMultipleDaysForm(forms.ModelForm):
-    start_date = forms.DateField(label="Start Date", widget=forms.SelectDateWidget)
-    end_date = forms.DateField(label="End Date", widget=forms.SelectDateWidget)
+    start_date = forms.DateField(label="Start Date", widget=forms.SelectDateWidget())
+    end_date = forms.DateField(label="End Date", required=False, widget=forms.SelectDateWidget())
 
     class Meta:
         model = BlockedTime
@@ -122,12 +122,21 @@ class BlockMultipleDaysForm(forms.ModelForm):
         self.fields['start_time'].required = False
         self.fields['end_time'].required = False
 
+        # When editing an existing BlockedTime entry, default the date range
+        # to the current instance date.
+        instance_date = getattr(self.instance, 'date', None)
+        if instance_date and not self.initial.get('start_date'):
+            self.initial['start_date'] = instance_date
+        if instance_date and not self.initial.get('end_date'):
+            self.initial['end_date'] = instance_date
+
     def clean(self):
         cleaned_data = super().clean()
         start_date = cleaned_data.get("start_date")
-        end_date = cleaned_data.get("end_date")
+        end_date = cleaned_data.get("end_date") or start_date
         if start_date and end_date and start_date > end_date:
             raise forms.ValidationError("End date must be after start date.")
+        cleaned_data["end_date"] = end_date
         return cleaned_data
     
 

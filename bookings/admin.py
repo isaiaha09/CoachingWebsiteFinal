@@ -29,13 +29,19 @@ class BlockedTimeAdmin(admin.ModelAdmin):
 
     def save_model(self, request, obj, form, change):
         start_date = form.cleaned_data.get('start_date')
-        end_date = form.cleaned_data.get('end_date')
+        end_date = form.cleaned_data.get('end_date') or start_date
         start_time = form.cleaned_data.get('start_time')
         end_time = form.cleaned_data.get('end_time')
         reason = form.cleaned_data.get('reason')
 
-        if start_date and end_date and start_date != end_date:
-            current = start_date
+        # Always save the primary object so the admin add/change flow has a PK.
+        # Then, for multi-day ranges, create additional objects for subsequent days.
+        if start_date:
+            obj.date = start_date
+        super().save_model(request, obj, form, change)
+
+        if start_date and end_date and end_date > start_date:
+            current = start_date + timedelta(days=1)
             while current <= end_date:
                 BlockedTime.objects.create(
                     date=current,
@@ -44,9 +50,6 @@ class BlockedTimeAdmin(admin.ModelAdmin):
                     reason=reason
                 )
                 current += timedelta(days=1)
-        else:
-            obj.date = start_date or obj.date
-            super().save_model(request, obj, form, change)
 
 @admin.register(DefaultDayHours)
 class DefaultDayHoursAdmin(admin.ModelAdmin):

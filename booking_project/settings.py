@@ -15,6 +15,13 @@ import os
 from dotenv import load_dotenv
 import dj_database_url
 
+
+def _split_env_list(var_name: str) -> list[str]:
+    value = os.getenv(var_name, "")
+    if not value:
+        return []
+    return [item.strip() for item in value.split(",") if item.strip()]
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -32,9 +39,22 @@ load_dotenv(BASE_DIR / '.env')
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+RUNNING_LOCALLY = os.environ.get("RUNNING_LOCALLY") == "1"
+DEBUG = os.getenv("DEBUG", "True" if RUNNING_LOCALLY else "False").lower() in {"1", "true", "yes", "on"}
 
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', 'nonpendant-profligately-tessa.ngrok-free.dev', 'coachalvarez44.com', '.onrender.com']
+
+# Fix: Django 4+ requires explicit trusted origins (with scheme) for CSRF checks.
+# Add more origins via env var `CSRF_TRUSTED_ORIGINS` as a comma-separated list.
+CSRF_TRUSTED_ORIGINS = _split_env_list("CSRF_TRUSTED_ORIGINS") or [
+    "https://coachalvarez44.com",
+    "https://www.coachalvarez44.com",
+    "https://*.onrender.com",
+]
+
+# When behind a proxy/ingress (e.g., Render), trust forwarded protocol so Django knows requests are HTTPS.
+if not RUNNING_LOCALLY:
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 LOGIN_URL = '/login/'   # Or any URL you want for your login page
 

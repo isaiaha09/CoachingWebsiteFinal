@@ -84,6 +84,12 @@
                 {% csrf_token %}
                 <button type="submit" class="button">Logout</button>
             </form>
+
+            <p class="booking-note">
+              <em>
+                Note: Be aware that time slots will be displayed unavailable if you look at times that are less than 24 hours in advance. Please be sure to book ahead in advance to prevent last minute decision bookings. Thank you.
+              </em>
+            </p>
           <!--  Scroll down to uncomment the script for sms notifications
             <div class="sms-opt-in">
                 <label for="smsToggle">Receive SMS Notifications</label>

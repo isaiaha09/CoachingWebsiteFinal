@@ -90,11 +90,24 @@
                       {{ b.date }} at {{ b.start_time }} — {{ b.lesson_type.name }}
 ({{ b.lesson_type.duration }}m) - ${{ b.lesson_type.get_price }}
                     </span>
-                    <a href="{% url 'cancel_booking' b.id %}"
-                      class="cancel-button"
-                      onclick="return confirm('Are you sure you want to cancel this booking?');">
-                      Cancel
-                    </a>
+                    <span class="booking-actions">
+                      {% if consultation_zoom_url and b.is_consultation %}
+                        <a
+                          href="{{ consultation_zoom_url }}"
+                          class="zoom-button"
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          Join Zoom
+                        </a>
+                      {% endif %}
+
+                      <a href="{% url 'cancel_booking' b.id %}"
+                        class="cancel-button"
+                        onclick="return confirm('Are you sure you want to cancel this booking?');">
+                        Cancel
+                      </a>
+                    </span>
                   </div>
               {% empty %}
                 <p>No bookings yet.</p>

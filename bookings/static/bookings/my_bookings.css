@@ -99,6 +99,27 @@ nav {
     background-color: #c7b500;
 }
 
+.booking-actions {
+    display: flex;
+    align-items: center;
+}
+
+.zoom-button {
+    display: inline-block;
+    padding: 6px 12px;
+    background-color: #780090;
+    color: white;
+    text-decoration: none;
+    margin-left: 10px;
+    border-radius: 5px;
+    font-weight: bold;
+    transition: background-color 0.3s ease;
+}
+
+.zoom-button:hover {
+    background-color: #c7b500;
+}
+
 .button-container{
     text-align: center;
 }

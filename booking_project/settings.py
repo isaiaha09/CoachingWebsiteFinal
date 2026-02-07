@@ -240,6 +240,15 @@ TWILIO_ACCOUNT_SID = os.getenv('TWILIO_ACCOUNT_SID')
 TWILIO_AUTH_TOKEN = os.getenv('TWILIO_AUTH_TOKEN')
 TWILIO_PHONE_NUMBER = os.getenv('TWILIO_PHONE_NUMBER')
 
+# Zoom (consultation meeting)
+# Put your reusable Zoom link in env var ZOOM_CONSULTATION_URL.
+# Optionally control which LessonType names show the Zoom link via keyword matching.
+ZOOM_CONSULTATION_URL = os.getenv("ZOOM_CONSULTATION_URL", "")
+ZOOM_CONSULTATION_KEYWORD = os.getenv("ZOOM_CONSULTATION_KEYWORD", "consult")
+# Optional: exact LessonType.name (case-insensitive) that should show the Zoom link.
+# If set, this takes precedence over ZOOM_CONSULTATION_KEYWORD.
+ZOOM_CONSULTATION_LESSON_NAME = os.getenv("ZOOM_CONSULTATION_LESSON_NAME", "")
+
 
 #Q_CLUSTER = {
  

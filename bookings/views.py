@@ -241,11 +241,27 @@ def my_bookings(request):
         Q(date__gt=now.date()) | Q(date=now.date(), start_time__gte=now.time())
     ).order_by('date', 'start_time')
 
-    show_message = bookings.exists()
+    # Evaluate once so any computed per-booking attributes are stable in the template.
+    bookings_list = list(bookings)
+
+    show_message = bool(bookings_list)
+
+    zoom_url = getattr(settings, "ZOOM_CONSULTATION_URL", "")
+    zoom_lesson_name = (getattr(settings, "ZOOM_CONSULTATION_LESSON_NAME", "") or "").strip().lower()
+    zoom_keyword = (getattr(settings, "ZOOM_CONSULTATION_KEYWORD", "consult") or "").strip().lower()
+
+    # Add a lightweight flag on each booking so the template can decide whether to show the Zoom link.
+    for b in bookings_list:
+        lesson_name = (getattr(b.lesson_type, "name", "") or "").lower()
+        if zoom_lesson_name:
+            b.is_consultation = lesson_name == zoom_lesson_name
+        else:
+            b.is_consultation = bool(zoom_keyword) and (zoom_keyword in lesson_name)
     
     return render(request, 'bookings/my_bookings.html', {
-        'bookings': bookings,
-        'show_message': show_message
+        'bookings': bookings_list,
+        'show_message': show_message,
+        'consultation_zoom_url': zoom_url,
     })
 
 

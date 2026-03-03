@@ -12,7 +12,6 @@ My Personal Baseball Instructor Contact (remake)
         <meta charset="UTF-8">
         <meta name = "viewport" content="width=device-width, initial-scale=1" >
         <link rel="stylesheet" href="{% static 'bookings/Personal Baseball Instructor Contact Page.css' %}">
-        <meta name="csrf-token" content="{{ csrf_token }}">
         <!-- Classic ICO favicon -->
         <link rel="icon" href="{% static 'bookings/images_and_videos/number44.ico'%}" type="image/x-icon">
 
@@ -67,7 +66,7 @@ My Personal Baseball Instructor Contact (remake)
                 </div>
             
                 <li class="logo">
-                    <a href="{% url 'login' %}">
+                    <a href="{% url 'booking_portal' %}">
                         <img src="{% static 'bookings/images_and_videos/number44.png' %}" alt="Logo" />
                             <span class="pop-word top-left">click</span>
                             <span class="pop-word top-right">here</span>
@@ -96,8 +95,10 @@ My Personal Baseball Instructor Contact (remake)
             </p>
 
             <div class="contactContainer">
-                <form id="contactForm" method="POST">
-                    {% csrf_token %}
+                <form id="contactForm" method="POST" action="https://api.web3forms.com/submit">
+                    <input type="hidden" name="access_key" value="3e2edaf8-ec04-402c-82bb-584e26bca779">
+                    <input type="hidden" name="from_name" value="Developmental Baseball Website">
+                    <input type="checkbox" name="botcheck" style="display: none;">
                     
                     <label for="fname">First Name</label>
                     <input type="text" id="fname" name="firstname" placeholder="Enter your first name" required>
@@ -117,7 +118,6 @@ My Personal Baseball Instructor Contact (remake)
                     <label for="message">Message</label>
                     <textarea id="message" name="message" placeholder="Type your message here" required></textarea>
 
-                    <div class="g-recaptcha" data-sitekey="{{ RECAPTCHA_PUBLIC_KEY }}"></div>
                     <input type="submit" value="Submit">
                 </form>
             </div>
@@ -167,7 +167,6 @@ My Personal Baseball Instructor Contact (remake)
             </div>
 
             -->
-            <script src="https://www.google.com/recaptcha/api.js" async defer></script>
             <div class="footerBottom">
                 <p>
                     Copyright &copy; <span id="currentYear"></span>; Designed by 
@@ -178,37 +177,26 @@ My Personal Baseball Instructor Contact (remake)
                 document.getElementById("contactForm").addEventListener("submit", async (e) => {
                     e.preventDefault();
 
-                     // ✅ Add this line here
-                    const recaptchaToken = grecaptcha.getResponse();
-        
-
-                    if (!recaptchaToken) {
-                        alert("Please complete the reCAPTCHA.");
-                        return;
-                    }
-
                     const form = e.target;
                     const formData = new FormData(form);
-                    formData.append("g-recaptcha-response", recaptchaToken);
 
                     try {
-                        const response = await fetch("{% url 'contact' %}", {
+                        const response = await fetch("https://api.web3forms.com/submit", {
                             method: "POST",
-                            body: formData,  // send as FormData
+                            body: formData,
                         });
 
                         const result = await response.json();
 
                         if (result.success) {
-                            alert("✅ " + result.message);
+                            alert("✅ Your message has been sent! I'll contact you soon! - Coach");
                             form.reset();
-                            grecaptcha.reset();
                         } else {
-                            alert("❌ " + result.message);
+                            alert("❌ " + (result.message || "Could not send message right now. Please try again."));
                         }
                     } catch (err) {
                         console.error(err);
-                        alert("❌ Server error, please try again later.");
+                        alert("❌ Network error. Please try again later.");
                     }
                 });
                 function toggleMenu() {

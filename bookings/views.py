@@ -31,59 +31,7 @@ from .email_backends import send_booking_mail  # Import the function here
 
 
 def contact(request):
-    if request.method == "POST":
-        data = request.POST
-        recaptcha_response = data.get("g-recaptcha-response")
-
-        if not recaptcha_response:
-            return JsonResponse({"success": False, "message": "reCAPTCHA token missing."})
-
-        # Verify reCAPTCHA
-        verify = requests.post(
-            "https://www.google.com/recaptcha/api/siteverify",
-            data={
-                "secret": settings.RECAPTCHA_PRIVATE_KEY,
-                "response": recaptcha_response
-            },
-            timeout=10
-        )
-        result = verify.json()
-
-        if not result.get("success"):
-            return JsonResponse({"success": False, "message": "reCAPTCHA verification failed. My apologies. Please try again later!"})
-
-        # Extract form data
-        firstname = data.get("firstname")
-        lastname = data.get("lastname")
-        email = data.get("email")
-        phone = data.get("phone")
-        subject = data.get("subject")
-        message_text = data.get("message")
-
-        # Send email via Brevo or other method
-        payload = {
-            "sender": {"name": "Developmental Baseball", "email": "contact@coachalvarez44.com"},
-            "to": [{"email": settings.EMAIL_RECEIVER}],
-            "subject": subject,
-            "textContent": f"Name: {firstname} {lastname}\nEmail: {email}\nPhone: {phone}\nMessage: {message_text}"
-        }
-
-        try:
-            response = requests.post(
-                "https://api.brevo.com/v3/smtp/email",
-                json=payload,
-                headers={
-                    "api-key": settings.BREVO_API_KEY,
-                    "Content-Type": "application/json"
-                },
-                timeout=10
-            )
-            response.raise_for_status()
-            return JsonResponse({"success": True, "message": "Your message has been sent! I'll contact you soon! - Coach"})
-        except Exception as e:
-            return JsonResponse({"success": False, "message": "Failed to send email. Server is currently down. Please try again later!"})
-
-    return render(request, "bookings/contact.html", {"RECAPTCHA_PUBLIC_KEY": settings.RECAPTCHA_PUBLIC_KEY})
+    return render(request, "bookings/contact.html")
 
 
 

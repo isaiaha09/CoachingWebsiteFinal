@@ -35,8 +35,8 @@ You selected **Web3Forms** as the contact API. This fits static hosting and does
    - `botcheck` hidden checkbox field
 5. Keep your existing client-side required validation and success/fail UI.
 6. Remove Django POST dependencies from contact page:
-   - remove `{% csrf_token %}` and `{{ csrf_token }}`
-   - remove `fetch("{% url 'contact' %}")` logic
+   - remove `&#123;% csrf_token %&#125;` and `&#123;&#123; csrf_token &#125;&#125;`
+   - remove `fetch("&#123;% url 'contact' %&#125;")` logic
 7. Replace with a static submit handler:
    - either plain HTML form submit to Web3Forms
    - or JS `fetch("https://api.web3forms.com/submit", { method: "POST", body: FormData(...) })`
@@ -86,19 +86,19 @@ If you want pretty URLs (`/contact` instead of `/contact.html`) on GitHub Pages,
 Your files in `bookings/templates/bookings` still contain Django template tags.
 
 ### Replace these globally in public-facing pages:
-1. Remove `{% load static %}` lines.
+1. Remove `&#123;% load static %&#125;` lines.
 2. Replace static references:
-   - From: `{% static 'bookings/...' %}`
+   - From: `&#123;% static 'bookings/...' %&#125;`
    - To: `/static/bookings/...`
 3. Replace route tags:
-   - `{% url 'index' %}` -> `/index.html`
-   - `{% url 'booking_portal' %}` -> `/booking.html`
-   - `{% url 'my-story' %}` -> `/my-story.html`
-   - `{% url 'credibility' %}` -> `/credibility.html`
-   - `{% url 'contact' %}` -> `/contact.html`
-   - `{% url 'gallery' %}` -> `/gallery.html`
-4. Remove `{% csrf_token %}` and any `{{ csrf_token }}` usage.
-5. Remove dynamic template vars like `{{ RECAPTCHA_PUBLIC_KEY }}` and hardcode public key in HTML if still using reCAPTCHA.
+   - `&#123;% url 'index' %&#125;` -> `/index.html`
+   - `&#123;% url 'booking_portal' %&#125;` -> `/booking.html`
+   - `&#123;% url 'my-story' %&#125;` -> `/my-story.html`
+   - `&#123;% url 'credibility' %&#125;` -> `/credibility.html`
+   - `&#123;% url 'contact' %&#125;` -> `/contact.html`
+   - `&#123;% url 'gallery' %&#125;` -> `/gallery.html`
+4. Remove `&#123;% csrf_token %&#125;` and any `&#123;&#123; csrf_token &#125;&#125;` usage.
+5. Remove dynamic template vars like `&#123;&#123; RECAPTCHA_PUBLIC_KEY &#125;&#125;` and hardcode public key in HTML if still using reCAPTCHA.
 
 ### Keep/Drop by page
 Keep as static pages:
